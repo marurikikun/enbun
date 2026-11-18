@@ -1,0 +1,12 @@
+{
+  "name": "塩分きろく帳",
+  "short_name": "塩分きろく帳",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f3f6f6",
+  "theme_color": "#1f6f78",
+  "icons": [
+    { "src": "icon-180.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

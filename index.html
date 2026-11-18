@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>塩分きろく帳</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="塩分きろく帳">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#1f6f78">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-180.png">
+<link rel="manifest" href="manifest.json">
+<style>
+:root{
+  --bg:#f3f6f6; --card:#ffffff; --ink:#1d2b2e; --sub:#5d6f73; --line:#d5dfe0;
+  --accent:#1f6f78; --accent-soft:#dcecee; --ok:#2e7d4f; --ok-soft:#e1f2e7;
+  --warn:#a86b00; --warn-soft:#fbefd6; --over:#b3261e; --over-soft:#fbe3e1;
+  --display:"Hiragino Maru Gothic ProN","Hiragino Sans","BIZ UDPGothic","Yu Gothic",sans-serif;
+  --body:"Hiragino Sans","BIZ UDPGothic","Yu Gothic",sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5;padding-top:env(safe-area-inset-top,0px)}
+.wrap{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 120px}
+h1,h2,h3{font-family:var(--display);margin:0}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+[hidden]{display:none!important}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.top h1{font-size:22px;color:var(--accent)}
+.note{border-radius:12px;padding:10px 12px;font-size:15px;margin-bottom:10px}
+.note.warn{background:var(--warn-soft);color:var(--warn)}
+.note.info{background:var(--accent-soft);color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+.stack{display:flex;flex-direction:column;gap:12px}
+.datebar{display:flex;align-items:center;gap:8px}
+.datebar .d{flex:1;text-align:center;font-family:var(--display);font-size:21px;font-weight:700}
+.nav-btn{border:1px solid var(--line);background:var(--card);border-radius:12px;min-width:48px;height:48px;font-size:22px}
+.today-btn{border:1px solid var(--accent);color:var(--accent);background:transparent;border-radius:12px;height:48px;padding:0 12px;font-size:15px}
+.total{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.total .num{font-family:var(--display);font-size:44px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
+.total .unit{font-size:18px}
+.total .goal{color:var(--sub);font-size:15px}
+.status{margin-left:auto;font-size:14px;font-weight:700;padding:4px 12px;border-radius:99px}
+.st-ok{background:var(--ok-soft);color:var(--ok)} .st-warn{background:var(--warn-soft);color:var(--warn)} .st-over{background:var(--over-soft);color:var(--over)}
+.bar{height:12px;border-radius:99px;background:var(--line);margin-top:10px;position:relative;overflow:hidden}
+.bar i{position:absolute;top:0;bottom:0;left:0;border-radius:99px}
+.meter-ok{background:var(--ok)} .meter-warn{background:var(--warn)} .meter-over{background:var(--over)}
+.lbl{font-size:14px;color:var(--sub);margin-bottom:6px}
+.choices{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:99px;padding:8px 14px;font-size:16px;min-height:44px}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.row3{display:grid;gap:12px}
+.meal-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.meal-head h2{font-size:20px;min-width:52px}
+.meal-head input[type=time]{border:1px solid var(--line);border-radius:10px;padding:6px 8px;background:var(--bg);min-height:44px;max-width:130px}
+.sub-total{margin-left:auto;font-variant-numeric:tabular-nums;font-weight:700;font-size:18px}
+.items{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column}
+.items li{display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px dashed var(--line)}
+.items .nm{flex:1;min-width:0}
+.items input.salt{width:76px;text-align:right;border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--bg);font-variant-numeric:tabular-nums}
+.x{border:0;background:transparent;color:var(--sub);font-size:22px;width:40px;height:40px;border-radius:10px}
+.add{margin-top:10px;width:100%;border:1.5px dashed var(--accent);background:transparent;color:var(--accent);border-radius:12px;min-height:48px;font-weight:700}
+.skipped{color:var(--sub);font-size:15px;margin:8px 0 0}
+.vitals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.field label{display:block;font-size:14px;color:var(--sub);margin-bottom:4px}
+.field input,textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--bg);min-height:48px;font-size:17px}
+textarea{min-height:90px;resize:vertical}
+.saved{font-size:13px;color:var(--sub);text-align:right;min-height:18px}
+.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px);z-index:5}
+.tabs button{border:0;background:transparent;padding:10px 4px 12px;font-size:13px;color:var(--sub);display:flex;flex-direction:column;align-items:center;gap:2px}
+.tabs button b{font-size:20px;line-height:1}
+.tabs button.on{color:var(--accent);font-weight:700}
+.sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--card);width:100%;max-width:760px;max-height:88%;border-radius:18px 18px 0 0;display:flex;flex-direction:column;padding:14px max(16px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.sheet-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.sheet-head h3{flex:1;font-size:19px}
+.close{border:1px solid var(--line);background:var(--bg);border-radius:10px;min-height:44px;padding:0 16px}
+.search{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--bg);min-height:48px;margin-bottom:10px;font-size:17px}
+.dish-grid{overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;padding-bottom:8px;-webkit-overflow-scrolling:touch}
+.dish{border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:10px;text-align:left;min-height:56px;display:flex;flex-direction:column}
+.dish small{color:var(--sub);font-variant-numeric:tabular-nums}
+.newdish{border-top:1px solid var(--line);padding-top:10px;margin-top:6px;display:grid;grid-template-columns:minmax(0,1fr) 96px;gap:8px}
+.newdish input{border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--bg);min-height:48px;min-width:0;font-size:17px}
+.newdish .opts{grid-column:1/-1;display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:space-between}
+.primary{background:var(--accent);color:#fff;border:0;border-radius:12px;min-height:48px;padding:0 18px;font-weight:700}
+.primary.big{width:100%;min-height:56px;font-size:18px}
+.toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:99px;font-size:15px;z-index:40;max-width:90%;text-align:center}
+.wk-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.wk-tools .d{flex:1;text-align:center;font-weight:700;font-family:var(--display);font-size:18px;min-width:0}
+.seg{display:flex;border:1px solid var(--line);border-radius:12px;overflow:hidden;width:100%}
+.seg button{flex:1;border:0;background:var(--card);padding:10px 8px;min-height:44px;font-size:15px}
+.seg button.on{background:var(--accent);color:#fff;font-weight:700}
+.summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.summary div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.summary b{display:block;font-family:var(--display);font-size:22px;font-variant-numeric:tabular-nums}
+.summary span{font-size:13px;color:var(--sub)}
+.tbl-wrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:12px;-webkit-overflow-scrolling:touch}
+table.wk{border-collapse:collapse;font-size:12.5px;min-width:720px;width:100%}
+.wk caption{text-align:left;padding:10px 12px;font-family:var(--display);font-weight:700;font-size:16px}
+.wk th,.wk td{border:1px solid var(--line);padding:5px 6px;vertical-align:top;text-align:left}
+.wk thead th{background:var(--accent-soft);text-align:center;font-weight:700}
+.wk tbody th{background:var(--accent-soft);white-space:nowrap;width:56px;font-weight:700}
+.wk td .it{display:flex;justify-content:space-between;gap:4px}
+.wk td .sm{border-top:1px solid var(--line);margin-top:3px;padding-top:2px;text-align:right;font-weight:700}
+.wk td.tot{font-size:15px;font-weight:700;text-align:center}
+.wk .muted{color:var(--sub)}
+.wk td.over{background:var(--over-soft);color:var(--over)}
+.hint{font-size:13px;color:var(--sub);margin:0}
+.dl{list-style:none;margin:0;padding:0}
+.dl li{display:flex;align-items:center;gap:8px;padding:10px 0;border-top:1px solid var(--line)}
+.dl li:first-child{border-top:0}
+.dl .nm{flex:1;min-width:0}
+.dl input{width:80px;text-align:right;border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--bg)}
+.del-confirm{border:0;background:var(--over);color:#fff;border-radius:8px;padding:6px 10px;font-size:14px}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:12px;min-height:48px;padding:0 16px}
+.danger{border-color:var(--over);color:var(--over)}
+.preview img{width:100%;border:1px solid var(--line);border-radius:8px;background:#fff}
+.steps{margin:0;padding-left:1.4em;font-size:15px}
+p{margin:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><h1>塩分きろく帳</h1></div>
+  <div id="installNote" class="note warn" hidden>ホーム画面に追加して、<b>アイコンから</b>開いてください。Safariから開いた記録とアイコンから開いた記録は、別々に保存されます。</div>
+  <div id="backupNote" class="note info" hidden></div>
+  <main id="view"></main>
+</div>
+<nav class="tabs" aria-label="画面の切り替え">
+  <button data-tab="day"><b>✎</b>きょうの記録</button>
+  <button data-tab="week"><b>▦</b>1週間の表</button>
+  <button data-tab="dish"><b>☰</b>料理リスト</button>
+  <button data-tab="set"><b>⚙</b>控え・設定</button>
+</nav>
+<div id="sheetRoot"></div>
+<div id="toast" class="toast" hidden></div>
+<input type="file" id="restoreFile" accept=".json,application/json" hidden>
+
+<script>
+(function(){
+"use strict";
+const GOAL=6, WARN=5;
+const MEALS=[["b","朝食"],["l","昼食"],["d","夕食"],["s","間食"],["n","夜食"]];
+const WEATHER=["晴れ","くもり","雨","雪"], SLEEP=["十分","足りない"], STRESS=["多い","ふつう","少ない"];
+const WD=["日","月","火","水","木","金","土"];
+const K_DAYS="enbun.days.v1", K_DISH="enbun.dishes.v1", K_BACKUP="enbun.lastBackup";
+const STARTER=[["トースト",0.6],["牛乳",0.1],["豆乳",0],["目玉焼き",0.1],["たまご",0.3],["納豆",0.3],["ごはん",0],["味のり",0.1],["生野菜",0.3],["なすのみそ汁",0.8],["わかめのみそ汁",1.1],["とん汁",1.0],["おにぎり",0.5],["たまご焼き",0.2],["ささみカツ",1.6],["お好み焼き",1.8],["しゅうまい",0.8],["金時豆",0.25],["赤飯",1.0],["おでん",2.0],["コロッケ",0.3],["鮭の西京焼き",1.0],["肉じゃが",1.2],["とりそぼろ丼",2.0],["かぼちゃ煮",0.3],["冷奴",0.03],["とんかつ",0.4],["ぎょうざ",0.4],["厚揚げ焼き",0.12],["とりかわ焼き",1.0],["メンチカツ",0.9],["カキフライ",0.6],["野沢菜",0.4],["イカそうめん",0.6],["野菜いため",1.0],["さつまあげ",1.2],["穴子・イカ天",0.5]];
+
+const state={tab:"day",date:todayStr(),weekMode:1,days:{},dishes:[],delPending:null,lastBackup:null};
+
+/* ---------- helpers ---------- */
+function todayStr(){return ymd(new Date())}
+function ymd(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function parse(s){const p=s.split("-").map(Number);return new Date(p[0],p[1]-1,p[2])}
+function addDays(s,n){const d=parse(s);d.setDate(d.getDate()+n);return ymd(d)}
+function mondayOf(s){const d=parse(s);d.setDate(d.getDate()-((d.getDay()+6)%7));return ymd(d)}
+function md(s){const d=parse(s);return (d.getMonth()+1)+"月"+d.getDate()+"日"}
+function mdShort(s){const d=parse(s);return (d.getMonth()+1)+"/"+d.getDate()}
+function wd(s){return WD[parse(s).getDay()]}
+function r2(x){return Math.round(x*100)/100}
+function fmt(x){if(x===""||x==null||isNaN(x))return "";const v=r2(Number(x));return Number.isInteger(v*10+1e-9)||Math.abs(v*10-Math.round(v*10))<1e-9?v.toFixed(1):String(v)}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function blankDay(date){const meals={};MEALS.forEach(([k])=>meals[k]={ate:null,time:"",items:[]});return {date,weather:"",sleep:"",stress:"",meals,bpHi:"",bpLo:"",weight:"",note:""}}
+function getDay(date){return state.days[date]||blankDay(date)}
+function touch(date){if(!state.days[date])state.days[date]=blankDay(date);return state.days[date]}
+function mealSalt(m){return r2((m.items||[]).reduce((a,i)=>a+(Number(i.salt)||0),0))}
+function daySalt(d){return r2(MEALS.reduce((a,[k])=>a+mealSalt(d.meals[k]||{items:[]}),0))}
+function hasData(d){return !!d&&MEALS.some(([k])=>{const m=d.meals[k];return m&&(m.items.length||m.ate!=null)})}
+function anyData(d){return hasData(d)||!!(d&&(d.note||d.weight||d.bpHi||d.weather))}
+function level(v){return v>GOAL?"over":v>=WARN?"warn":"ok"}
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,1800)}
+function lsGet(k,def){try{const v=localStorage.getItem(k);return v?JSON.parse(v):def}catch(e){return def}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}
+function normalize(v,id){const d=blankDay(id);Object.assign(d,v||{});d.date=id;MEALS.forEach(([k])=>{d.meals[k]=Object.assign({ate:null,time:"",items:[]},(v&&v.meals&&v.meals[k])||{});d.meals[k].items=Array.isArray(d.meals[k].items)?d.meals[k].items:[]});return d}
+function sortedDishes(list){return [...list].sort((a,b)=>(b.uses||0)-(a.uses||0)||a.name.localeCompare(b.name,"ja"))}
+
+/* ---------- storage (this phone only) ---------- */
+function load(){
+  const raw=lsGet(K_DAYS,{});state.days={};Object.keys(raw).forEach(k=>state.days[k]=normalize(raw[k],k));
+  state.dishes=lsGet(K_DISH,null)||STARTER.map(([name,salt])=>({name,salt,uses:0}));
+  state.lastBackup=lsGet(K_BACKUP,null);
+  try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
+}
+let saveTimer=null;
+function saveSoon(){clearTimeout(saveTimer);setSaved("保存中…");saveTimer=setTimeout(saveNow,500)}
+function saveNow(){clearTimeout(saveTimer);const ok=lsSet(K_DAYS,state.days)&&lsSet(K_DISH,state.dishes);setSaved(ok?"保存しました":"保存できませんでした");if(!ok)toast("保存できませんでした。iPhoneの空き容量をご確認ください")}
+function setSaved(t){const el=document.getElementById("savedMsg");if(el)el.textContent=t}
+window.addEventListener("pagehide",saveNow);
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")saveNow()});
+
+/* ---------- views ---------- */
+function render(){
+  document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("on",b.dataset.tab===state.tab));
+  document.getElementById("installNote").hidden=!!(navigator.standalone||window.matchMedia("(display-mode: standalone)").matches);
+  const bn=document.getElementById("backupNote");const days=Object.values(state.days).filter(anyData).length;
+  const since=state.lastBackup?Math.floor((Date.now()-state.lastBackup)/86400000):null;
+  if(days>=3&&(since===null||since>=7)){bn.hidden=false;bn.innerHTML=(since===null?"まだ控えを送っていません。":"前に控えを送ってから"+since+"日たちました。")+"「控え・設定」から送っておくと安心です。"}else bn.hidden=true;
+  const v=document.getElementById("view");
+  v.innerHTML=state.tab==="day"?dayView():state.tab==="week"?weekView():state.tab==="dish"?dishView():setView();
+}
+function choiceRow(label,field,opts,val){return `<div><div class="lbl">${label}</div><div class="choices">${opts.map(o=>`<button class="chip${val===o?" on":""}" data-act="choice" data-field="${field}" data-val="${o}">${o}</button>`).join("")}</div></div>`}
+function dayView(){
+  const d=getDay(state.date),tot=daySalt(d),lv=level(tot),pct=Math.min(100,tot/8*100);
+  const stText={ok:"目安内",warn:"そろそろ注意",over:"6gを超えました"}[lv];
+  let h=`<div class="stack">
+  <div class="datebar"><button class="nav-btn" data-act="day-prev" aria-label="前の日">‹</button><div class="d">${md(state.date)}（${wd(state.date)}）</div><button class="nav-btn" data-act="day-next" aria-label="次の日">›</button>${state.date!==todayStr()?`<button class="today-btn" data-act="day-today">今日</button>`:""}</div>
+  <section class="card"><div class="total"><span class="num">${fmt(tot)||"0.0"}</span><span class="unit">g</span><span class="goal">1日の目安 ${GOAL}g</span><span class="status st-${lv}">${stText}</span></div><div class="bar"><i class="meter-${lv}" style="width:${pct}%"></i></div></section>
+  <section class="card row3">${choiceRow("天気","weather",WEATHER,d.weather)}${choiceRow("睡眠","sleep",SLEEP,d.sleep)}${choiceRow("ストレス","stress",STRESS,d.stress)}</section>`;
+  MEALS.forEach(([k,name])=>{
+    const m=d.meals[k],st=mealSalt(m);
+    h+=`<section class="card"><div class="meal-head"><h2>${name}</h2>
+      <button class="chip${m.ate===true?" on":""}" data-act="ate" data-meal="${k}" data-val="1">食べた</button>
+      <button class="chip${m.ate===false?" on":""}" data-act="ate" data-meal="${k}" data-val="0">食べない</button>
+      ${m.ate===false?"":`<input type="time" id="time-${k}" value="${esc(m.time)}" data-act="time" data-meal="${k}" aria-label="${name}の時間">`}
+      ${m.items.length?`<span class="sub-total">${fmt(st)} g</span>`:""}</div>`;
+    if(m.ate===false)h+=`<p class="skipped">食べなかった</p>`;
+    else{
+      if(m.items.length)h+=`<ul class="items">`+m.items.map((it,i)=>`<li><span class="nm">${esc(it.name)}</span><input class="salt" id="salt-${k}-${i}" type="number" inputmode="decimal" step="0.1" min="0" value="${it.salt===""?"":esc(it.salt)}" data-act="salt" data-meal="${k}" data-i="${i}" aria-label="${esc(it.name)}の塩分"><span>g</span><button class="x" data-act="rm" data-meal="${k}" data-i="${i}" aria-label="${esc(it.name)}を消す">×</button></li>`).join("")+`</ul>`;
+      h+=`<button class="add" data-act="pick" data-meal="${k}">＋ 料理を追加</button>`;
+    }
+    h+=`</section>`;
+  });
+  h+=`<section class="card stack"><div class="vitals">
+    <div class="field"><label for="bpHi">血圧（上）</label><input id="bpHi" type="number" inputmode="numeric" value="${esc(d.bpHi)}" data-act="f" data-field="bpHi"></div>
+    <div class="field"><label for="bpLo">血圧（下）</label><input id="bpLo" type="number" inputmode="numeric" value="${esc(d.bpLo)}" data-act="f" data-field="bpLo"></div>
+    <div class="field"><label for="weight">体重kg</label><input id="weight" type="number" inputmode="decimal" step="0.1" value="${esc(d.weight)}" data-act="f" data-field="weight"></div></div>
+    <div class="field"><label for="note">1日の感想・体調</label><textarea id="note" data-act="f" data-field="note" placeholder="例：せきが少し。デイに行った。">${esc(d.note)}</textarea></div>
+    <div id="savedMsg" class="saved"></div></section></div>`;
+  return h;
+}
+function cellMeal(m){
+  if(!m)return "";
+  if(m.ate===false)return `<span class="muted">食べない</span>`;
+  if(!m.items.length)return m.time?`<span class="muted">${esc(m.time)}頃</span>`:"";
+  return (m.time?`<div class="muted">${esc(m.time)}頃</div>`:"")+m.items.map(i=>`<div class="it"><span>${esc(i.name)}</span><span>${fmt(i.salt)}</span></div>`).join("")+`<div class="sm">${fmt(mealSalt(m))}</div>`;
+}
+function weekTable(mon){
+  const dates=[...Array(7)].map((_,i)=>addDays(mon,i)),ds=dates.map(x=>state.days[x]);
+  const row=(label,fn)=>`<tr><th scope="row">${label}</th>${ds.map(d=>{const r=fn(d);return typeof r==="object"?`<td class="${r.cls}">${r.h}</td>`:`<td>${r}</td>`}).join("")}</tr>`;
+  return `<div class="tbl-wrap"><table class="wk"><caption>食事記録シート　${mdShort(dates[0])}〜${mdShort(dates[6])}</caption>
+  <thead><tr><th></th>${dates.map(x=>`<th>${wd(x)}<br>${mdShort(x)}</th>`).join("")}</tr></thead><tbody>
+  ${row("天気",d=>esc(d&&d.weather||""))}${row("睡眠",d=>esc(d&&d.sleep||""))}${row("ストレス",d=>esc(d&&d.stress||""))}
+  ${MEALS.map(([k,n])=>row(n,d=>cellMeal(d&&d.meals[k]))).join("")}
+  ${row("塩分合計",d=>{if(!hasData(d))return {h:"",cls:"tot"};const t=daySalt(d);return {h:fmt(t)+"g",cls:"tot"+(t>GOAL?" over":"")}})}
+  ${row("血圧",d=>d&&(d.bpHi||d.bpLo)?esc(d.bpHi)+(d.bpLo?"/"+esc(d.bpLo):""):"")}
+  ${row("体重",d=>d&&d.weight?esc(d.weight)+"kg":"")}
+  ${row("感想",d=>esc(d&&d.note||""))}</tbody></table></div>`;
+}
+function stats(weeks){
+  const all=weeks.flatMap(w=>[...Array(7)].map((_,i)=>state.days[addDays(w,i)])).filter(hasData);
+  const vals=all.map(daySalt);
+  return {n:vals.length,avg:vals.length?r2(vals.reduce((a,b)=>a+b,0)/vals.length):null,max:vals.length?Math.max(...vals):null,over:vals.filter(v=>v>GOAL).length,wts:all.filter(d=>d.weight).map(d=>d.weight)};
+}
+function weekView(){
+  const mon=mondayOf(state.date),weeks=state.weekMode===2?[addDays(mon,-7),mon]:[mon],s=stats(weeks);
+  return `<div class="stack">
+  <div class="wk-tools"><button class="nav-btn" data-act="wk-prev" aria-label="前の週">‹</button><div class="d">${mdShort(weeks[0])}〜${mdShort(addDays(weeks[weeks.length-1],6))}</div><button class="nav-btn" data-act="wk-next" aria-label="次の週">›</button></div>
+  <div class="seg" role="group" aria-label="表示する期間"><button class="${state.weekMode===1?"on":""}" data-act="wk-mode" data-val="1">看護師さん用（1週間）</button><button class="${state.weekMode===2?"on":""}" data-act="wk-mode" data-val="2">先生用（2週間）</button></div>
+  <button class="primary big" data-act="print">🖨 印刷用の画像を作る</button>
+  <div class="summary">
+    <div><span>1日平均</span><b>${s.avg==null?"—":fmt(s.avg)+"g"}</b></div>
+    <div><span>いちばん多い日</span><b>${s.max==null?"—":fmt(s.max)+"g"}</b></div>
+    <div><span>6gを超えた日</span><b>${s.n?s.over+"日":"—"}</b><span>記録 ${s.n}日のうち</span></div>
+    <div><span>体重</span><b style="font-size:18px">${s.wts.length?esc(s.wts[0])+(s.wts.length>1?" → "+esc(s.wts[s.wts.length-1]):"")+"kg":"—"}</b></div>
+  </div>
+  ${weeks.map(weekTable).join("")}
+  <p class="hint">スマホを横向きにすると表が全部見えます。印刷は1週間ごとにA4横1枚です（2週間なら2枚）。</p></div>`;
+}
+function dishView(){
+  const list=sortedDishes(state.dishes);
+  return `<div class="stack"><section class="card"><h2 style="font-size:19px;margin-bottom:6px">料理リスト（${list.length}品）</h2>
+  <p class="hint" style="margin-bottom:8px">よく使う料理ほど上に出ます。塩分の数字はここで直せます。</p>
+  <ul class="dl">${list.map(x=>{const i=state.dishes.indexOf(x);return `<li><span class="nm">${esc(x.name)}</span><input id="dsalt-${i}" type="number" inputmode="decimal" step="0.01" min="0" value="${esc(x.salt)}" data-act="dsalt" data-i="${i}" aria-label="${esc(x.name)}の塩分"><span>g</span>${state.delPending===i?`<button class="del-confirm" data-act="ddel-yes" data-i="${i}">消す</button>`:`<button class="x" data-act="ddel" data-i="${i}" aria-label="${esc(x.name)}をリストから消す">×</button>`}</li>`}).join("")}</ul></section>
+  <section class="card"><h3 style="font-size:17px;margin-bottom:8px">料理を登録する</h3>
+  <div class="newdish"><input id="nd-name" placeholder="料理の名前"><input id="nd-salt" type="number" inputmode="decimal" step="0.1" min="0" placeholder="塩分g"><div class="opts"><span></span><button class="primary" data-act="dadd">登録する</button></div></div></section></div>`;
+}
+function setView(){
+  const n=Object.values(state.days).filter(anyData).length;
+  const lb=state.lastBackup?new Date(state.lastBackup):null;
+  return `<div class="stack">
+  <section class="card stack"><h2 style="font-size:19px">控えを送る</h2>
+  <p>記録は<b>このiPhoneの中だけ</b>に保存されています（${n}日分）。iPhoneの故障や機種変更に備えて、<b>週に1回</b>くらい控えを送ってください。</p>
+  <p class="hint">前回：${lb?(lb.getMonth()+1)+"月"+lb.getDate()+"日":"まだ送っていません"}</p>
+  <button class="primary big" data-act="backup">控えのファイルを送る</button>
+  <p class="hint">押すと送り先の一覧が出ます。LINEやメールで、ご主人に送ってください。</p></section>
+  <section class="card stack"><h2 style="font-size:19px">控えから戻す</h2>
+  <p>機種変更のときなどに、送っておいた控えのファイルを読み込みます。いまの記録に足し合わせます（同じ日は控えのほうで上書き）。</p>
+  <div><button class="btn" data-act="restore">控えのファイルを選ぶ</button></div></section>
+  <section class="card stack"><h2 style="font-size:19px">見本の記録（試し用）</h2>
+  ${Object.values(state.days).some(d=>d.sample)?`<p>見本の記録が入っています。本番を始める前に消してください。</p><div>${state.delPending==="sample"?`<button class="btn danger" data-act="sample-yes">本当に見本を消す</button> <button class="btn" data-act="sample-no">やめる</button>`:`<button class="btn danger" data-act="sample-del">見本を全部消す</button>`}</div>`:`<p>操作を試すための、架空の1週間分の記録を入れます。</p><div><button class="btn" data-act="sample-add">見本の記録を入れる</button></div>`}</section>
+  <section class="card stack"><h2 style="font-size:19px">印刷のしかた</h2>
+  <ol class="steps"><li>「1週間の表」で「印刷用の画像を作る」を押す</li><li>「Canon PRINTで印刷」を押し、一覧から <b>Canon PRINT</b> を選ぶ</li><li>Canon PRINTで印刷ボタンを押す</li></ol>
+  <p class="hint">一覧にCanon PRINTが出ないときは「画像を保存」を押し、Canon PRINTの「文書印刷」から保存した画像を選んでください。</p></section>
+  </div>`;
+}
+
+/* ---------- picker ---------- */
+let pickMeal=null;
+function drawPicker(q){
+  const name=MEALS.find(m=>m[0]===pickMeal)[1];
+  const list=sortedDishes(state.dishes.filter(x=>!q||x.name.includes(q)));
+  document.getElementById("sheetRoot").innerHTML=`<div class="sheet-bg" data-act="sheet-bg"><div class="sheet" role="dialog" aria-label="${name}に料理を追加">
+  <div class="sheet-head"><h3>${name}に追加</h3><button class="close" data-act="sheet-close">閉じる</button></div>
+  <input id="pk-q" class="search" placeholder="料理をさがす" value="${esc(q)}">
+  <div class="dish-grid" id="pk-grid">${list.map(x=>`<button class="dish" data-act="pk-add" data-i="${state.dishes.indexOf(x)}">${esc(x.name)}<small>${fmt(x.salt)} g</small></button>`).join("")||`<p class="hint">見つかりません。下で新しく登録できます。</p>`}</div>
+  <div class="newdish"><input id="pk-name" placeholder="新しい料理の名前" value="${esc(q)}"><input id="pk-salt" type="number" inputmode="decimal" step="0.1" min="0" placeholder="塩分g">
+  <div class="opts"><label><input type="checkbox" id="pk-reg" checked> 料理リストにも登録</label><button class="primary" data-act="pk-new">追加</button></div></div></div></div>`;
+}
+function closeSheet(){document.getElementById("sheetRoot").innerHTML="";pickMeal=null;printFiles=null;render()}
+
+/* ---------- print image (A4 landscape, black & white friendly) ---------- */
+const PW=2339,PH=1654;
+const CFONT='"Hiragino Sans","BIZ UDPGothic","Yu Gothic","Meiryo",sans-serif';
+function drawWeek(mon){
+  const cv=document.createElement("canvas");cv.width=PW;cv.height=PH;const c=cv.getContext("2d");
+  c.fillStyle="#fff";c.fillRect(0,0,PW,PH);c.fillStyle="#000";c.strokeStyle="#000";c.textBaseline="top";
+  const M=60,top=150,bottom=PH-70,labelW=150,colW=(PW-2*M-labelW)/7;
+  const dates=[...Array(7)].map((_,i)=>addDays(mon,i)),ds=dates.map(x=>state.days[x]),s=stats([mon]);
+  // title + summary
+  c.font=`bold 52px ${CFONT}`;c.fillText(`食事記録シート　${mdShort(dates[0])}〜${mdShort(dates[6])}`,M,48);
+  c.font=`30px ${CFONT}`;c.textAlign="right";
+  c.fillText(`1日平均 ${s.avg==null?"—":fmt(s.avg)+"g"}　いちばん多い日 ${s.max==null?"—":fmt(s.max)+"g"}　6g超え ${s.n?s.over+"日／"+s.n+"日":"—"}`,PW-M,60);
+  c.textAlign="left";
+  function wrap(text,maxW,font){c.font=font;const out=[];String(text||"").split(/\n/).forEach(par=>{let line="";for(const ch of par){if(c.measureText(line+ch).width>maxW&&line){out.push(line);line=ch}else line+=ch}out.push(line)});return out.filter((l,i,a)=>l!==""||a.length===1?true:false)}
+  function mealLines(m){if(!m)return [];if(m.ate===false)return [{t:"食べない",muted:true}];const L=[];if(m.time)L.push({t:m.time+"頃",muted:true});m.items.forEach(i=>L.push({t:i.name,salt:fmt(i.salt)}));if(m.items.length)L.push({sum:fmt(mealSalt(m))});return L}
+  // fit font size
+  let f=30,layout;
+  for(;f>=14;f-=1){
+    const lh=Math.round(f*1.32),pad=8;
+    const rows=[];
+    rows.push({key:"head",h:lh*2+pad*2});
+    ["天気","睡眠","ストレス"].forEach(n=>rows.push({key:n,h:lh+pad*2}));
+    MEALS.forEach(([k,n])=>{const mx=Math.max(1,...ds.map(d=>mealLines(d&&d.meals[k]).length));rows.push({key:k,label:n,h:mx*lh+pad*2})});
+    rows.push({key:"tot",h:Math.round(lh*1.4)+pad*2});
+    rows.push({key:"bp",h:lh+pad*2});rows.push({key:"wt",h:lh+pad*2});
+    const nl=Math.max(1,...ds.map(d=>wrap(d&&d.note,colW-2*pad,`${f}px ${CFONT}`).length));rows.push({key:"note",h:nl*lh+pad*2});
+    const total=rows.reduce((a,r)=>a+r.h,0);
+    layout={rows,lh,pad,total};
+    if(total<=bottom-top)break;
+  }
+  const {rows,lh,pad}=layout;
+  // if there is spare room, stretch meal rows a little for writing space
+  const spare=(bottom-top)-layout.total;
+  if(spare>0){const mrows=rows.filter(r=>MEALS.some(m=>m[0]===r.key)||r.key==="note");const add=spare/mrows.length;mrows.forEach(r=>r.h+=add)}
+  let y=top;
+  const label={"天気":"天気","睡眠":"睡眠","ストレス":"ストレス",tot:"塩分合計",bp:"血圧",wt:"体重",note:"感想"};
+  c.lineWidth=2;
+  rows.forEach(r=>{
+    // grid
+    c.strokeRect(M,y,labelW,r.h);for(let i=0;i<7;i++)c.strokeRect(M+labelW+i*colW,y,colW,r.h);
+    // label
+    c.font=`bold ${f}px ${CFONT}`;c.fillStyle="#000";
+    if(r.key==="head"){c.fillStyle="#e6e6e6";c.fillRect(M+1,y+1,labelW-2,r.h-2);for(let i=0;i<7;i++){c.fillRect(M+labelW+i*colW+1,y+1,colW-2,r.h-2)}c.fillStyle="#000";
+      dates.forEach((x,i)=>{c.textAlign="center";c.font=`bold ${f}px ${CFONT}`;c.fillText(wd(x)+"曜",M+labelW+i*colW+colW/2,y+pad);c.font=`${f}px ${CFONT}`;c.fillText(md(x),M+labelW+i*colW+colW/2,y+pad+lh)});c.textAlign="left";y+=r.h;return}
+    c.fillText(r.label||label[r.key],M+10,y+pad);
+    ds.forEach((d,i)=>{
+      const x0=M+labelW+i*colW+pad,x1=M+labelW+(i+1)*colW-pad;let ty=y+pad;
+      c.font=`${f}px ${CFONT}`;
+      if(["天気","睡眠","ストレス"].includes(r.key)){const v=d&&d[{"天気":"weather","睡眠":"sleep","ストレス":"stress"}[r.key]];if(v){c.textAlign="center";c.fillText(v,(x0+x1)/2,ty);c.textAlign="left"}}
+      else if(MEALS.some(m=>m[0]===r.key)){
+        mealLines(d&&d.meals[r.key]).forEach(L=>{
+          if(L.sum!=null){c.beginPath();c.moveTo(x0,ty+2);c.lineTo(x1,ty+2);c.lineWidth=1;c.stroke();c.lineWidth=2;c.font=`bold ${f}px ${CFONT}`;c.textAlign="right";c.fillText(L.sum,x1,ty+5);c.textAlign="left";c.font=`${f}px ${CFONT}`}
+          else if(L.muted){c.fillStyle="#555";c.fillText(L.t,x0,ty);c.fillStyle="#000"}
+          else{let nm=L.t;const sw=L.salt?c.measureText(L.salt).width+10:0;while(c.measureText(nm).width>x1-x0-sw&&nm.length>1)nm=nm.slice(0,-1);if(nm!==L.t)nm=nm.slice(0,-1)+"…";c.fillText(nm,x0,ty);if(L.salt){c.textAlign="right";c.fillText(L.salt,x1,ty);c.textAlign="left"}}
+          ty+=lh;
+        });
+      }
+      else if(r.key==="tot"){if(hasData(d)){const t=daySalt(d);c.textAlign="center";c.font=`bold ${Math.round(f*1.3)}px ${CFONT}`;c.fillText((t>GOAL?"★ ":"")+fmt(t)+" g",(x0+x1)/2,ty);c.textAlign="left";if(t>GOAL){c.lineWidth=4;c.strokeRect(M+labelW+i*colW+4,y+4,colW-8,r.h-8);c.lineWidth=2}}}
+      else if(r.key==="bp"){if(d&&(d.bpHi||d.bpLo)){c.textAlign="center";c.fillText((d.bpHi||"")+(d.bpLo?" / "+d.bpLo:""),(x0+x1)/2,ty);c.textAlign="left"}}
+      else if(r.key==="wt"){if(d&&d.weight){c.textAlign="center";c.fillText(d.weight+" kg",(x0+x1)/2,ty);c.textAlign="left"}}
+      else if(r.key==="note"){wrap(d&&d.note,x1-x0,`${f}px ${CFONT}`).forEach(l=>{c.fillText(l,x0,ty);ty+=lh})}
+    });
+    y+=r.h;
+  });
+  c.font=`22px ${CFONT}`;c.fillStyle="#333";c.fillText("塩分の単位は g（グラム）　★＝1日6gを超えた日",M,PH-50);
+  c.textAlign="right";const now=new Date();c.fillText("印刷日 "+(now.getMonth()+1)+"/"+now.getDate(),PW-M,PH-50);c.textAlign="left";
+  return cv;
+}
+let printFiles=null;
+function openPrint(){
+  const mon=mondayOf(state.date),weeks=state.weekMode===2?[addDays(mon,-7),mon]:[mon];
+  const canvases=weeks.map(drawWeek);
+  document.getElementById("sheetRoot").innerHTML=`<div class="sheet-bg" data-act="sheet-bg"><div class="sheet" role="dialog" aria-label="印刷用の画像">
+  <div class="sheet-head"><h3>印刷用の画像（${weeks.length}枚）</h3><button class="close" data-act="sheet-close">閉じる</button></div>
+  <div class="stack preview" style="overflow:auto" id="pv"></div>
+  <div class="stack" style="margin-top:10px"><button class="primary big" data-act="share-print" disabled id="shareBtn">準備中…</button>
+  <p class="hint">一覧から <b>Canon PRINT</b> を選んでください。出ないときは「画像を保存」→ Canon PRINTの「文書印刷」から選びます。</p></div></div></div>`;
+  const pv=document.getElementById("pv");
+  printFiles=[];let done=0;
+  canvases.forEach((cv,i)=>{const img=document.createElement("img");img.alt="印刷用の画像 "+(i+1);img.src=cv.toDataURL("image/png");pv.appendChild(img);
+    cv.toBlob(b=>{printFiles[i]=new File([b],`食事記録_${weeks[i]}.png`,{type:"image/png"});done++;if(done===canvases.length){const btn=document.getElementById("shareBtn");if(btn){btn.disabled=false;btn.textContent="Canon PRINTで印刷（共有）"}}},"image/png")});
+}
+async function sharePrint(){
+  if(!printFiles||!printFiles.length)return;
+  try{
+    if(navigator.canShare&&navigator.canShare({files:printFiles})){await navigator.share({files:printFiles})}
+    else toast("この画面では共有できません。画像を長押しして「写真に保存」してください");
+  }catch(e){if(e&&e.name!=="AbortError")toast("共有できませんでした。画像を長押しして保存してください")}
+}
+
+/* ---------- sample records (fictional, flagged sample:true) ---------- */
+function addSamples(){
+  const mon=mondayOf(todayStr()),I=(name,salt)=>({name,salt});
+  const plan=[
+    [[I("トースト",0.6),I("目玉焼き",0.1),I("牛乳",0.1)],[I("おにぎり",0.5),I("わかめのみそ汁",1.1),I("生野菜",0.3)],[I("鮭の西京焼き",1.0),I("かぼちゃ煮",0.3),I("冷奴",0.03),I("ごはん",0)],null,"晴れ","十分","ふつう","138","78","60.1","散歩を少し。よく眠れた様子。"],
+    [[I("トースト",0.6),I("牛乳",0.1)],[I("しゅうまい",0.8),I("ごはん",0),I("生野菜",0.3)],[I("肉じゃが",1.2),I("生野菜",0.3),I("ごはん",0)],null,"くもり","足りない","ふつう","142","80","","夜にせきが少し。"],
+    [null,[I("とりそぼろ丼",2.0),I("生野菜",0.3)],[I("コロッケ",0.3),I("とん汁",1.0),I("ごはん",0)],[I("味のり",0.1)],"雨","十分","少ない","130","76","","デイサービスへ。体操に参加。"],
+    [[I("豆乳",0),I("納豆",0.3),I("ごはん",0)],[I("お好み焼き",1.8)],[I("おでん",2.0),I("生野菜",0.3),I("さつまあげ",1.2),I("ごはん",0)],[I("イカそうめん",0.6)],"晴れ","十分","多い","150","84","","少し疲れ気味。"],
+    [[I("トースト",0.6),I("牛乳",0.1)],[I("おにぎり",0.5),I("たまご焼き",0.2),I("なすのみそ汁",0.8)],[I("とんかつ",0.4),I("生野菜",0.3),I("冷奴",0.03),I("ごはん",0)],null,"くもり","十分","ふつう","134","78","59.8","リハビリの日。おふろに入った。"],
+    [[I("豆乳",0)],[I("しゅうまい",0.8),I("金時豆",0.25),I("赤飯",1.0)],[I("野菜いため",1.0),I("さつまあげ",1.2),I("生野菜",0.3),I("ごはん",0)],null,"晴れ","足りない","ふつう","146","82","","のどが少し痛い。"],
+    [[I("納豆",0.3),I("たまご",0.3),I("ごはん",0)],null,null,null,"くもり","十分","ふつう","","","",""]
+  ];
+  plan.forEach((p,i)=>{const date=addDays(mon,i);if(state.days[date]&&anyData(state.days[date]))return;
+    const d=blankDay(date);d.sample=true;
+    [["b",p[0],"08:30"],["l",p[1],"12:00"],["d",p[2],"18:00"],["n",p[3],""]].forEach(([k,items,tm])=>{if(items){d.meals[k]={ate:true,time:tm,items}}else if(k==="b"&&i===2){d.meals.b.ate=false}});
+    d.weather=p[4];d.sleep=p[5];d.stress=p[6];d.bpHi=p[7];d.bpLo=p[8];d.weight=p[9];d.note=p[10]?"（見本）"+p[10]:"";
+    state.days[date]=d;});
+  saveNow();render();toast("見本の記録を入れました");
+}
+
+/* ---------- backup / restore ---------- */
+async function backup(){
+  saveNow();
+  const data={app:"塩分きろく帳",version:1,exportedAt:new Date().toISOString(),days:state.days,dishes:state.dishes};
+  const name=`塩分きろく_控え_${todayStr()}.json`;
+  const file=new File([JSON.stringify(data)],name,{type:"application/json"});
+  try{
+    if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:name});state.lastBackup=Date.now();lsSet(K_BACKUP,state.lastBackup);render();toast("控えを送りました")}
+    else toast("この画面では送れません。アイコンから開いて試してください");
+  }catch(e){if(e&&e.name!=="AbortError")toast("送れませんでした")}
+}
+document.getElementById("restoreFile").addEventListener("change",e=>{
+  const f=e.target.files&&e.target.files[0];if(!f)return;
+  const rd=new FileReader();rd.onload=()=>{
+    try{const d=JSON.parse(rd.result);if(!d||!d.days)throw 0;
+      let n=0;Object.keys(d.days).forEach(k=>{if(/^\d{4}-\d{2}-\d{2}$/.test(k)){state.days[k]=normalize(d.days[k],k);n++}});
+      (d.dishes||[]).forEach(x=>{if(x&&x.name&&!state.dishes.some(y=>y.name===x.name))state.dishes.push({name:x.name,salt:Number(x.salt)||0,uses:x.uses||0})});
+      saveNow();render();toast(n+"日分を読み込みました");
+    }catch(_){toast("このファイルは読み込めません")}
+    e.target.value="";
+  };rd.readAsText(f);
+});
+
+/* ---------- events ---------- */
+document.addEventListener("click",e=>{
+  const tabBtn=e.target.closest(".tabs button");
+  if(tabBtn){state.tab=tabBtn.dataset.tab;state.delPending=null;render();window.scrollTo(0,0);return}
+  const t=e.target.closest("[data-act]");if(!t)return;
+  const a=t.dataset.act,date=state.date;
+  if(a==="sheet-bg"&&e.target!==t)return;
+  switch(a){
+    case "day-prev":state.date=addDays(date,-1);render();break;
+    case "day-next":state.date=addDays(date,1);render();break;
+    case "day-today":state.date=todayStr();render();break;
+    case "choice":{const d=touch(date);d[t.dataset.field]=d[t.dataset.field]===t.dataset.val?"":t.dataset.val;render();saveSoon();break}
+    case "ate":{const m=touch(date).meals[t.dataset.meal],v=t.dataset.val==="1";m.ate=m.ate===v?null:v;render();saveSoon();break}
+    case "rm":{touch(date).meals[t.dataset.meal].items.splice(+t.dataset.i,1);render();saveSoon();break}
+    case "pick":pickMeal=t.dataset.meal;drawPicker("");break;
+    case "sheet-close":case "sheet-bg":closeSheet();break;
+    case "pk-add":{const x=state.dishes[+t.dataset.i],m=touch(date).meals[pickMeal];m.items.push({name:x.name,salt:x.salt});if(m.ate==null)m.ate=true;x.uses=(x.uses||0)+1;saveSoon();toast(x.name+" を追加しました");break}
+    case "pk-new":{const nm=document.getElementById("pk-name").value.trim(),sv=document.getElementById("pk-salt").value;if(!nm){toast("料理の名前を入れてください");break}
+      const salt=sv===""?"":r2(Number(sv)),m=touch(date).meals[pickMeal];m.items.push({name:nm,salt});if(m.ate==null)m.ate=true;
+      if(document.getElementById("pk-reg").checked&&!state.dishes.some(x=>x.name===nm))state.dishes.push({name:nm,salt:salt===""?0:salt,uses:1});
+      saveSoon();toast(nm+" を追加しました");drawPicker("");break}
+    case "wk-prev":state.date=addDays(date,-7*state.weekMode);render();break;
+    case "wk-next":state.date=addDays(date,7*state.weekMode);render();break;
+    case "wk-mode":state.weekMode=+t.dataset.val;render();break;
+    case "print":openPrint();break;
+    case "share-print":sharePrint();break;
+    case "ddel":state.delPending=+t.dataset.i;render();break;
+    case "ddel-yes":state.dishes.splice(+t.dataset.i,1);state.delPending=null;saveNow();render();toast("消しました");break;
+    case "dadd":{const nm=document.getElementById("nd-name").value.trim(),sv=document.getElementById("nd-salt").value;if(!nm){toast("料理の名前を入れてください");break}
+      if(state.dishes.some(x=>x.name===nm)){toast("同じ名前の料理があります");break}
+      state.dishes.push({name:nm,salt:sv===""?0:r2(Number(sv)),uses:0});saveNow();render();toast(nm+" を登録しました");break}
+    case "sample-add":addSamples();break;
+    case "sample-del":state.delPending="sample";render();break;
+    case "sample-no":state.delPending=null;render();break;
+    case "sample-yes":Object.keys(state.days).forEach(k=>{if(state.days[k].sample)delete state.days[k]});state.delPending=null;saveNow();render();toast("見本を消しました");break;
+    case "backup":backup();break;
+    case "restore":document.getElementById("restoreFile").click();break;
+  }
+});
+document.addEventListener("input",e=>{
+  const t=e.target,a=t.dataset&&t.dataset.act,date=state.date;
+  if(t.id==="pk-q"){const q=t.value;const grid=document.getElementById("pk-grid");const list=sortedDishes(state.dishes.filter(x=>!q||x.name.includes(q)));
+    grid.innerHTML=list.map(x=>`<button class="dish" data-act="pk-add" data-i="${state.dishes.indexOf(x)}">${esc(x.name)}<small>${fmt(x.salt)} g</small></button>`).join("")||`<p class="hint">見つかりません。下で新しく登録できます。</p>`;
+    document.getElementById("pk-name").value=q;return}
+  if(!a)return;
+  if(a==="f"){touch(date)[t.dataset.field]=t.value;saveSoon()}
+  else if(a==="time"){touch(date).meals[t.dataset.meal].time=t.value;saveSoon()}
+  else if(a==="salt"){const m=touch(date).meals[t.dataset.meal];m.items[+t.dataset.i].salt=t.value===""?"":r2(Number(t.value));saveSoon();
+    const head=t.closest("section").querySelector(".sub-total");if(head)head.textContent=fmt(mealSalt(m))+" g"}
+  else if(a==="dsalt"){state.dishes[+t.dataset.i].salt=t.value===""?0:r2(Number(t.value));saveSoon()}
+});
+document.addEventListener("change",e=>{if(e.target.dataset&&e.target.dataset.act==="salt")render()});
+
+load();render();
+})();
+</script>
+</body>
+</html>
