@@ -589,6 +589,7 @@ document.addEventListener("keydown",e=>{
 });
 document.addEventListener("change",e=>{if(e.target.dataset&&e.target.dataset.act==="salt")render()});
 
+if("serviceWorker" in navigator){try{navigator.serviceWorker.register("sw.js")}catch(e){}}
 load();render();
 })();
 </script>
