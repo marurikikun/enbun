@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
 <title>塩分きろく帳</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -14,9 +15,10 @@
 <link rel="manifest" href="manifest.json">
 <style>
 :root{
-  --bg:#f3f6f6; --card:#ffffff; --ink:#1d2b2e; --sub:#5d6f73; --line:#d5dfe0;
-  --accent:#1f6f78; --accent-soft:#dcecee; --ok:#2e7d4f; --ok-soft:#e1f2e7;
-  --warn:#a86b00; --warn-soft:#fbefd6; --over:#b3261e; --over-soft:#fbe3e1;
+  --bg:#f2f5f4; --card:#ffffff; --ink:#1d2b2e; --sub:#5d6f73; --line:#dbe3e2;
+  --accent:#1f6f78; --accent-soft:#e0eeef; --ok:#2e7d4f; --ok-soft:#e3f3e8;
+  --warn:#a86b00; --warn-soft:#fcf0d8; --over:#b3261e; --over-soft:#fbe4e2;
+  --shadow:0 1px 3px rgba(20,40,45,.06);
   --display:"Hiragino Maru Gothic ProN","Hiragino Sans","BIZ UDPGothic","Yu Gothic",sans-serif;
   --body:"Hiragino Sans","BIZ UDPGothic","Yu Gothic",sans-serif;
   color-scheme:light;
@@ -30,19 +32,23 @@ button,input,textarea{font:inherit;color:inherit}
 button{cursor:pointer;-webkit-tap-highlight-color:transparent}
 :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 [hidden]{display:none!important}
-.top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
-.top h1{font-size:22px;color:var(--accent)}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.top img{width:34px;height:34px;border-radius:9px}
+.top h1{font-size:22px;color:var(--accent);letter-spacing:.02em}
 .note{border-radius:12px;padding:10px 12px;font-size:15px;margin-bottom:10px}
 .note.warn{background:var(--warn-soft);color:var(--warn)}
 .note.info{background:var(--accent-soft);color:var(--accent)}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow)}
 .stack{display:flex;flex-direction:column;gap:12px}
 .datebar{display:flex;align-items:center;gap:8px}
 .datebar .d{flex:1;text-align:center;font-family:var(--display);font-size:21px;font-weight:700}
-.nav-btn{border:1px solid var(--line);background:var(--card);border-radius:12px;min-width:48px;height:48px;font-size:22px}
+.nav-btn{border:1px solid var(--line);background:var(--card);border-radius:12px;min-width:48px;height:48px;font-size:22px;box-shadow:var(--shadow)}
 .today-btn{border:1px solid var(--accent);color:var(--accent);background:transparent;border-radius:12px;height:48px;padding:0 12px;font-size:15px}
+.totalcard.lv-ok{background:linear-gradient(180deg,#fff,var(--ok-soft))}
+.totalcard.lv-warn{background:linear-gradient(180deg,#fff,var(--warn-soft))}
+.totalcard.lv-over{background:linear-gradient(180deg,#fff,var(--over-soft))}
 .total{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
-.total .num{font-family:var(--display);font-size:44px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
+.total .num{font-family:var(--display);font-size:46px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
 .total .unit{font-size:18px}
 .total .goal{color:var(--sub);font-size:15px}
 .status{margin-left:auto;font-size:14px;font-weight:700;padding:4px 12px;border-radius:99px}
@@ -56,33 +62,45 @@ button{cursor:pointer;-webkit-tap-highlight-color:transparent}
 .chip.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
 .row3{display:grid;gap:12px}
 .meal-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.meal-head h2{font-size:20px;min-width:52px}
+.meal-head h2{font-size:20px;min-width:72px}
+.meal-head h2 .ic{margin-right:4px}
 .meal-head input[type=time]{border:1px solid var(--line);border-radius:10px;padding:6px 8px;background:var(--bg);min-height:44px;max-width:130px}
 .sub-total{margin-left:auto;font-variant-numeric:tabular-nums;font-weight:700;font-size:18px}
 .items{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column}
-.items li{display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px dashed var(--line)}
-.items .nm{flex:1;min-width:0}
+.items li{display:flex;align-items:center;gap:6px;padding:6px 0;border-top:1px dashed var(--line)}
+.items .nm{flex:1;min-width:0;text-align:left;border:0;background:transparent;padding:6px 4px;border-radius:8px;min-height:40px}
+.items .nm small{color:var(--sub);font-size:12px;margin-left:6px}
 .items input.salt{width:76px;text-align:right;border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--bg);font-variant-numeric:tabular-nums}
 .x{border:0;background:transparent;color:var(--sub);font-size:22px;width:40px;height:40px;border-radius:10px}
 .add{margin-top:10px;width:100%;border:1.5px dashed var(--accent);background:transparent;color:var(--accent);border-radius:12px;min-height:48px;font-weight:700}
+.again{margin-top:10px;width:100%;border:0;background:var(--accent-soft);color:var(--accent);border-radius:12px;min-height:52px;font-weight:700;text-align:left;padding:8px 14px;display:flex;flex-direction:column}
+.again small{font-weight:400;font-size:13px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .skipped{color:var(--sub);font-size:15px;margin:8px 0 0}
 .vitals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.field label{display:block;font-size:14px;color:var(--sub);margin-bottom:4px}
+.field label{display:flex;align-items:center;justify-content:space-between;font-size:14px;color:var(--sub);margin-bottom:4px;min-height:24px}
 .field input,textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--bg);min-height:48px;font-size:17px}
 textarea{min-height:90px;resize:vertical}
+.mic{border:1px solid var(--line);background:var(--card);border-radius:99px;min-height:36px;padding:0 12px;font-size:14px;color:var(--accent)}
+.mic.rec{background:var(--over);border-color:var(--over);color:#fff}
 .saved{font-size:13px;color:var(--sub);text-align:right;min-height:18px}
 .tabs{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px);z-index:5}
-.tabs button{border:0;background:transparent;padding:10px 4px 12px;font-size:13px;color:var(--sub);display:flex;flex-direction:column;align-items:center;gap:2px}
-.tabs button b{font-size:20px;line-height:1}
+.tabs button{border:0;background:transparent;padding:8px 4px 10px;font-size:13px;color:var(--sub);display:flex;flex-direction:column;align-items:center;gap:2px}
+.tabs button b{font-size:20px;line-height:1;padding:3px 14px;border-radius:99px}
 .tabs button.on{color:var(--accent);font-weight:700}
+.tabs button.on b{background:var(--accent-soft)}
 .sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:20;display:flex;align-items:flex-end;justify-content:center}
 .sheet{background:var(--card);width:100%;max-width:760px;max-height:88%;border-radius:18px 18px 0 0;display:flex;flex-direction:column;padding:14px max(16px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
 .sheet-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
 .sheet-head h3{flex:1;font-size:19px}
 .close{border:1px solid var(--line);background:var(--bg);border-radius:10px;min-height:44px;padding:0 16px}
-.search{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--bg);min-height:48px;margin-bottom:10px;font-size:17px}
-.dish-grid{overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;padding-bottom:8px;-webkit-overflow-scrolling:touch}
+.searchrow{display:flex;gap:8px;margin-bottom:10px}
+.search{flex:1;min-width:0;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--bg);min-height:48px;font-size:17px}
+.searchrow .mic{min-height:48px;border-radius:10px}
+.pk-scroll{overflow:auto;-webkit-overflow-scrolling:touch;padding-bottom:8px}
+.grp{font-size:13px;color:var(--sub);margin:4px 0 6px;font-weight:700}
+.dish-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:10px}
 .dish{border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:10px;text-align:left;min-height:56px;display:flex;flex-direction:column}
+.dish.fav{background:var(--accent-soft);border-color:#c3dfe1}
 .dish small{color:var(--sub);font-variant-numeric:tabular-nums}
 .newdish{border-top:1px solid var(--line);padding-top:10px;margin-top:6px;display:grid;grid-template-columns:minmax(0,1fr) 96px;gap:8px}
 .newdish input{border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--bg);min-height:48px;min-width:0;font-size:17px}
@@ -96,7 +114,7 @@ textarea{min-height:90px;resize:vertical}
 .seg button{flex:1;border:0;background:var(--card);padding:10px 8px;min-height:44px;font-size:15px}
 .seg button.on{background:var(--accent);color:#fff;font-weight:700}
 .summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.summary div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.summary div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;box-shadow:var(--shadow)}
 .summary b{display:block;font-family:var(--display);font-size:22px;font-variant-numeric:tabular-nums}
 .summary span{font-size:13px;color:var(--sub)}
 .tbl-wrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:12px;-webkit-overflow-scrolling:touch}
@@ -126,7 +144,7 @@ p{margin:0}
 </head>
 <body>
 <div class="wrap">
-  <div class="top"><h1>塩分きろく帳</h1></div>
+  <div class="top"><img src="icon-180.png" alt=""><h1>塩分きろく帳</h1></div>
   <div id="installNote" class="note warn" hidden>ホーム画面に追加して、<b>アイコンから</b>開いてください。Safariから開いた記録とアイコンから開いた記録は、別々に保存されます。</div>
   <div id="backupNote" class="note info" hidden></div>
   <main id="view"></main>
@@ -145,11 +163,12 @@ p{margin:0}
 (function(){
 "use strict";
 const GOAL=6, WARN=5;
-const MEALS=[["b","朝食"],["l","昼食"],["d","夕食"],["s","間食"],["n","夜食"]];
+const MEALS=[["b","朝食","🌅"],["l","昼食","☀️"],["d","夕食","🌙"],["s","間食","🍵"],["n","夜食","🌃"]];
 const WEATHER=["晴れ","くもり","雨","雪"], SLEEP=["十分","足りない"], STRESS=["多い","ふつう","少ない"];
 const WD=["日","月","火","水","木","金","土"];
 const K_DAYS="enbun.days.v1", K_DISH="enbun.dishes.v1", K_BACKUP="enbun.lastBackup";
 const STARTER=[["トースト",0.6],["牛乳",0.1],["豆乳",0],["目玉焼き",0.1],["たまご",0.3],["納豆",0.3],["ごはん",0],["味のり",0.1],["生野菜",0.3],["なすのみそ汁",0.8],["わかめのみそ汁",1.1],["とん汁",1.0],["おにぎり",0.5],["たまご焼き",0.2],["ささみカツ",1.6],["お好み焼き",1.8],["しゅうまい",0.8],["金時豆",0.25],["赤飯",1.0],["おでん",2.0],["コロッケ",0.3],["鮭の西京焼き",1.0],["肉じゃが",1.2],["とりそぼろ丼",2.0],["かぼちゃ煮",0.3],["冷奴",0.03],["とんかつ",0.4],["ぎょうざ",0.4],["厚揚げ焼き",0.12],["とりかわ焼き",1.0],["メンチカツ",0.9],["カキフライ",0.6],["野沢菜",0.4],["イカそうめん",0.6],["野菜いため",1.0],["さつまあげ",1.2],["穴子・イカ天",0.5]];
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition||null;
 
 const state={tab:"day",date:todayStr(),weekMode:1,days:{},dishes:[],delPending:null,lastBackup:null};
 
@@ -165,19 +184,42 @@ function wd(s){return WD[parse(s).getDay()]}
 function r2(x){return Math.round(x*100)/100}
 function fmt(x){if(x===""||x==null||isNaN(x))return "";const v=r2(Number(x));return Number.isInteger(v*10+1e-9)||Math.abs(v*10-Math.round(v*10))<1e-9?v.toFixed(1):String(v)}
 function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-function blankDay(date){const meals={};MEALS.forEach(([k])=>meals[k]={ate:null,time:"",items:[]});return {date,weather:"",sleep:"",stress:"",meals,bpHi:"",bpLo:"",weight:"",note:""}}
+function mealName(k){return MEALS.find(m=>m[0]===k)[1]}
+function blankDay(date){const meals={};MEALS.forEach(([k])=>meals[k]={ate:null,time:"",items:[]});return {date,weather:"",sleep:"",stress:"",meals,bpHi:"",bpLo:"",pulse:"",weight:"",note:""}}
 function getDay(date){return state.days[date]||blankDay(date)}
 function touch(date){if(!state.days[date])state.days[date]=blankDay(date);return state.days[date]}
 function mealSalt(m){return r2((m.items||[]).reduce((a,i)=>a+(Number(i.salt)||0),0))}
 function daySalt(d){return r2(MEALS.reduce((a,[k])=>a+mealSalt(d.meals[k]||{items:[]}),0))}
 function hasData(d){return !!d&&MEALS.some(([k])=>{const m=d.meals[k];return m&&(m.items.length||m.ate!=null)})}
-function anyData(d){return hasData(d)||!!(d&&(d.note||d.weight||d.bpHi||d.weather))}
+function anyData(d){return hasData(d)||!!(d&&(d.note||d.weight||d.bpHi||d.pulse||d.weather))}
 function level(v){return v>GOAL?"over":v>=WARN?"warn":"ok"}
-function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,1800)}
+function bpText(d){if(!d)return "";const bp=(d.bpHi||d.bpLo)?(d.bpHi||"")+(d.bpLo?"/"+d.bpLo:""):"";const p=d.pulse?"脈"+d.pulse:"";return [bp,p].filter(Boolean).join(" ")}
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,2200)}
 function lsGet(k,def){try{const v=localStorage.getItem(k);return v?JSON.parse(v):def}catch(e){return def}}
 function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}
 function normalize(v,id){const d=blankDay(id);Object.assign(d,v||{});d.date=id;MEALS.forEach(([k])=>{d.meals[k]=Object.assign({ate:null,time:"",items:[]},(v&&v.meals&&v.meals[k])||{});d.meals[k].items=Array.isArray(d.meals[k].items)?d.meals[k].items:[]});return d}
 function sortedDishes(list){return [...list].sort((a,b)=>(b.uses||0)-(a.uses||0)||a.name.localeCompare(b.name,"ja"))}
+function bumpUse(name){const x=state.dishes.find(y=>y.name===name);if(x)x.uses=(x.uses||0)+1}
+
+/* ---------- "smart" ordering: what was eaten in THIS meal before ---------- */
+function slotStats(k){
+  const m={};
+  for(const dt in state.days){const ml=state.days[dt].meals[k];if(!ml||!ml.items)continue;
+    ml.items.forEach(it=>{const s=m[it.name]||(m[it.name]={n:0,last:""});s.n++;if(dt>s.last)s.last=dt})}
+  return m;
+}
+function pickerGroups(k,q){
+  const st=slotStats(k),today=todayStr();
+  const score=s=>{if(!s.n)return 0;const ago=(parse(today)-parse(s.last))/86400000;return s.n+(ago<=3?3:ago<=14?1:0)};
+  const list=state.dishes.filter(x=>!q||x.name.includes(q)).map(x=>({x,s:st[x.name]||{n:0,last:""}}));
+  const fav=list.filter(o=>o.s.n>0).sort((a,b)=>score(b.s)-score(a.s)||(b.s.last>a.s.last?1:b.s.last<a.s.last?-1:0)||a.x.name.localeCompare(b.x.name,"ja"));
+  const rest=list.filter(o=>!o.s.n).sort((a,b)=>(b.x.uses||0)-(a.x.uses||0)||a.x.name.localeCompare(b.x.name,"ja"));
+  return {fav:fav.map(o=>o.x),rest:rest.map(o=>o.x)};
+}
+function prevMeal(k,date){
+  for(let i=1;i<=120;i++){const dt=addDays(date,-i),d=state.days[dt];if(d&&d.meals[k]&&d.meals[k].items.length)return {dt,m:d.meals[k]}}
+  return null;
+}
 
 /* ---------- storage (this phone only) ---------- */
 function load(){
@@ -192,6 +234,22 @@ function saveNow(){clearTimeout(saveTimer);const ok=lsSet(K_DAYS,state.days)&&ls
 function setSaved(t){const el=document.getElementById("savedMsg");if(el)el.textContent=t}
 window.addEventListener("pagehide",saveNow);
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")saveNow()});
+
+/* ---------- voice input ---------- */
+let rec=null;
+function startMic(targetId,btn){
+  if(rec){try{rec.stop()}catch(e){}return}
+  if(!SR){toast("ここでは使えません。キーボードのマイク🎤を使ってください");return}
+  const el=document.getElementById(targetId);if(!el)return;
+  const base=targetId==="note"?el.value:"";
+  let r;try{r=new SR()}catch(e){toast("キーボードのマイク🎤を使ってください");return}
+  r.lang="ja-JP";r.interimResults=true;r.continuous=false;
+  r.onresult=e=>{let t="";for(let i=0;i<e.results.length;i++)t+=e.results[i][0].transcript;
+    el.value=base?(base+(/[。\n]$/.test(base)?"":"。")+t):t;el.dispatchEvent(new Event("input",{bubbles:true}))};
+  r.onerror=e=>{if(e.error==="not-allowed"||e.error==="service-not-allowed"||e.error==="audio-capture")toast("マイクが使えません。キーボードのマイク🎤を使ってください");else if(e.error==="no-speech")toast("声が聞き取れませんでした")};
+  r.onend=()=>{rec=null;document.querySelectorAll(".mic.rec").forEach(b=>{b.classList.remove("rec");b.textContent="🎤 話す"})};
+  try{r.start();rec=r;btn.classList.add("rec");btn.textContent="■ 止める"}catch(e){toast("キーボードのマイク🎤を使ってください")}
+}
 
 /* ---------- views ---------- */
 function render(){
@@ -209,27 +267,29 @@ function dayView(){
   const stText={ok:"目安内",warn:"そろそろ注意",over:"6gを超えました"}[lv];
   let h=`<div class="stack">
   <div class="datebar"><button class="nav-btn" data-act="day-prev" aria-label="前の日">‹</button><div class="d">${md(state.date)}（${wd(state.date)}）</div><button class="nav-btn" data-act="day-next" aria-label="次の日">›</button>${state.date!==todayStr()?`<button class="today-btn" data-act="day-today">今日</button>`:""}</div>
-  <section class="card"><div class="total"><span class="num">${fmt(tot)||"0.0"}</span><span class="unit">g</span><span class="goal">1日の目安 ${GOAL}g</span><span class="status st-${lv}">${stText}</span></div><div class="bar"><i class="meter-${lv}" style="width:${pct}%"></i></div></section>
+  <section class="card totalcard lv-${lv}"><div class="total"><span class="num">${fmt(tot)||"0.0"}</span><span class="unit">g</span><span class="goal">1日の目安 ${GOAL}g</span><span class="status st-${lv}">${stText}</span></div><div class="bar"><i class="meter-${lv}" style="width:${pct}%"></i></div></section>
   <section class="card row3">${choiceRow("天気","weather",WEATHER,d.weather)}${choiceRow("睡眠","sleep",SLEEP,d.sleep)}${choiceRow("ストレス","stress",STRESS,d.stress)}</section>`;
-  MEALS.forEach(([k,name])=>{
+  MEALS.forEach(([k,name,ic])=>{
     const m=d.meals[k],st=mealSalt(m);
-    h+=`<section class="card"><div class="meal-head"><h2>${name}</h2>
+    h+=`<section class="card"><div class="meal-head"><h2><span class="ic">${ic}</span>${name}</h2>
       <button class="chip${m.ate===true?" on":""}" data-act="ate" data-meal="${k}" data-val="1">食べた</button>
       <button class="chip${m.ate===false?" on":""}" data-act="ate" data-meal="${k}" data-val="0">食べない</button>
       ${m.ate===false?"":`<input type="time" id="time-${k}" value="${esc(m.time)}" data-act="time" data-meal="${k}" aria-label="${name}の時間">`}
       ${m.items.length?`<span class="sub-total">${fmt(st)} g</span>`:""}</div>`;
     if(m.ate===false)h+=`<p class="skipped">食べなかった</p>`;
     else{
-      if(m.items.length)h+=`<ul class="items">`+m.items.map((it,i)=>`<li><span class="nm">${esc(it.name)}</span><input class="salt" id="salt-${k}-${i}" type="number" inputmode="decimal" step="0.1" min="0" value="${it.salt===""?"":esc(it.salt)}" data-act="salt" data-meal="${k}" data-i="${i}" aria-label="${esc(it.name)}の塩分"><span>g</span><button class="x" data-act="rm" data-meal="${k}" data-i="${i}" aria-label="${esc(it.name)}を消す">×</button></li>`).join("")+`</ul>`;
+      if(m.items.length)h+=`<ul class="items">`+m.items.map((it,i)=>`<li><button class="nm" data-act="swap" data-meal="${k}" data-i="${i}" aria-label="${esc(it.name)}を選び変え">${esc(it.name)}<small>選び変え</small></button><input class="salt" id="salt-${k}-${i}" type="number" inputmode="decimal" step="0.1" min="0" value="${it.salt===""?"":esc(it.salt)}" data-act="salt" data-meal="${k}" data-i="${i}" aria-label="${esc(it.name)}の塩分"><span>g</span><button class="x" data-act="rm" data-meal="${k}" data-i="${i}" aria-label="${esc(it.name)}を消す">×</button></li>`).join("")+`</ul>`;
+      else{const p=prevMeal(k,state.date);if(p)h+=`<button class="again" data-act="again" data-meal="${k}">↺ 前回と同じにする<small>${mdShort(p.dt)}：${esc(p.m.items.map(i=>i.name).join("・"))}（${fmt(mealSalt(p.m))}g）</small></button>`}
       h+=`<button class="add" data-act="pick" data-meal="${k}">＋ 料理を追加</button>`;
     }
     h+=`</section>`;
   });
   h+=`<section class="card stack"><div class="vitals">
-    <div class="field"><label for="bpHi">血圧（上）</label><input id="bpHi" type="number" inputmode="numeric" value="${esc(d.bpHi)}" data-act="f" data-field="bpHi"></div>
-    <div class="field"><label for="bpLo">血圧（下）</label><input id="bpLo" type="number" inputmode="numeric" value="${esc(d.bpLo)}" data-act="f" data-field="bpLo"></div>
-    <div class="field"><label for="weight">体重kg</label><input id="weight" type="number" inputmode="decimal" step="0.1" value="${esc(d.weight)}" data-act="f" data-field="weight"></div></div>
-    <div class="field"><label for="note">1日の感想・体調</label><textarea id="note" data-act="f" data-field="note" placeholder="例：せきが少し。デイに行った。">${esc(d.note)}</textarea></div>
+    <div class="field"><label for="bpHi">血圧（上）</label><input id="bpHi" type="number" inputmode="numeric" enterkeyhint="next" value="${esc(d.bpHi)}" data-act="f" data-field="bpHi"></div>
+    <div class="field"><label for="bpLo">血圧（下）</label><input id="bpLo" type="number" inputmode="numeric" enterkeyhint="next" value="${esc(d.bpLo)}" data-act="f" data-field="bpLo"></div>
+    <div class="field"><label for="pulse">脈拍</label><input id="pulse" type="number" inputmode="numeric" enterkeyhint="next" value="${esc(d.pulse)}" data-act="f" data-field="pulse"></div>
+    <div class="field"><label for="weight">体重kg</label><input id="weight" type="number" inputmode="decimal" step="0.1" enterkeyhint="next" value="${esc(d.weight)}" data-act="f" data-field="weight"></div></div>
+    <div class="field"><label for="note"><span>1日の感想・体調</span><button class="mic" data-act="mic" data-target="note">🎤 話す</button></label><textarea id="note" data-act="f" data-field="note" placeholder="例：せきが少し。デイに行った。">${esc(d.note)}</textarea></div>
     <div id="savedMsg" class="saved"></div></section></div>`;
   return h;
 }
@@ -246,8 +306,8 @@ function weekTable(mon){
   <thead><tr><th></th>${dates.map(x=>`<th>${wd(x)}<br>${mdShort(x)}</th>`).join("")}</tr></thead><tbody>
   ${row("天気",d=>esc(d&&d.weather||""))}${row("睡眠",d=>esc(d&&d.sleep||""))}${row("ストレス",d=>esc(d&&d.stress||""))}
   ${MEALS.map(([k,n])=>row(n,d=>cellMeal(d&&d.meals[k]))).join("")}
-  ${row("塩分合計",d=>{if(!hasData(d))return {h:"",cls:"tot"};const t=daySalt(d);return {h:fmt(t)+"g",cls:"tot"+(t>GOAL?" over":"")}})}
-  ${row("血圧",d=>d&&(d.bpHi||d.bpLo)?esc(d.bpHi)+(d.bpLo?"/"+esc(d.bpLo):""):"")}
+  ${row("塩分合計",d=>{if(!hasData(d))return {h:"",cls:"tot"};const t=daySalt(d);return {h:(t>GOAL?"★ ":"")+fmt(t)+"g",cls:"tot"+(t>GOAL?" over":"")}})}
+  ${row("血圧・脈拍",d=>esc(bpText(d)))}
   ${row("体重",d=>d&&d.weight?esc(d.weight)+"kg":"")}
   ${row("感想",d=>esc(d&&d.note||""))}</tbody></table></div>`;
 }
@@ -274,10 +334,10 @@ function weekView(){
 function dishView(){
   const list=sortedDishes(state.dishes);
   return `<div class="stack"><section class="card"><h2 style="font-size:19px;margin-bottom:6px">料理リスト（${list.length}品）</h2>
-  <p class="hint" style="margin-bottom:8px">よく使う料理ほど上に出ます。塩分の数字はここで直せます。</p>
+  <p class="hint" style="margin-bottom:8px">よく使う料理ほど上に出ます。塩分の数字はここで直せます。料理を追加するときは、朝・昼・夜それぞれで、よく食べるものが先に出ます。</p>
   <ul class="dl">${list.map(x=>{const i=state.dishes.indexOf(x);return `<li><span class="nm">${esc(x.name)}</span><input id="dsalt-${i}" type="number" inputmode="decimal" step="0.01" min="0" value="${esc(x.salt)}" data-act="dsalt" data-i="${i}" aria-label="${esc(x.name)}の塩分"><span>g</span>${state.delPending===i?`<button class="del-confirm" data-act="ddel-yes" data-i="${i}">消す</button>`:`<button class="x" data-act="ddel" data-i="${i}" aria-label="${esc(x.name)}をリストから消す">×</button>`}</li>`}).join("")}</ul></section>
   <section class="card"><h3 style="font-size:17px;margin-bottom:8px">料理を登録する</h3>
-  <div class="newdish"><input id="nd-name" placeholder="料理の名前"><input id="nd-salt" type="number" inputmode="decimal" step="0.1" min="0" placeholder="塩分g"><div class="opts"><span></span><button class="primary" data-act="dadd">登録する</button></div></div></section></div>`;
+  <div class="newdish"><input id="nd-name" placeholder="料理の名前"><input id="nd-salt" type="number" inputmode="decimal" step="0.1" min="0" placeholder="塩分g"><div class="opts"><span class="hint">よく食べる組み合わせは「朝のいつもセット」のように1品で登録しても便利です。</span><button class="primary" data-act="dadd">登録する</button></div></div></section></div>`;
 }
 function setView(){
   const n=Object.values(state.days).filter(anyData).length;
@@ -294,24 +354,36 @@ function setView(){
   <section class="card stack"><h2 style="font-size:19px">見本の記録（試し用）</h2>
   ${Object.values(state.days).some(d=>d.sample)?`<p>見本の記録が入っています。本番を始める前に消してください。</p><div>${state.delPending==="sample"?`<button class="btn danger" data-act="sample-yes">本当に見本を消す</button> <button class="btn" data-act="sample-no">やめる</button>`:`<button class="btn danger" data-act="sample-del">見本を全部消す</button>`}</div>`:`<p>操作を試すための、架空の1週間分の記録を入れます。</p><div><button class="btn" data-act="sample-add">見本の記録を入れる</button></div>`}</section>
   <section class="card stack"><h2 style="font-size:19px">印刷のしかた</h2>
-  <ol class="steps"><li>「1週間の表」で「印刷用の画像を作る」を押す</li><li>「Canon PRINTで印刷」を押し、一覧から <b>Canon PRINT</b> を選ぶ</li><li>Canon PRINTで印刷ボタンを押す</li></ol>
-  <p class="hint">一覧にCanon PRINTが出ないときは「画像を保存」を押し、Canon PRINTの「文書印刷」から保存した画像を選んでください。</p></section>
+  <ol class="steps"><li>「1週間の表」で「印刷用の画像を作る」を押す</li><li>「画像を保存」を押し、一覧から「画像を保存」を選ぶ（または、画像を長押しして「写真に保存」）</li><li><b>Canon PRINT</b> を開き、「写真印刷」で保存した画像を選んで印刷（用紙はA4・横）</li></ol></section>
   </div>`;
 }
 
 /* ---------- picker ---------- */
-let pickMeal=null;
-function drawPicker(q){
-  const name=MEALS.find(m=>m[0]===pickMeal)[1];
-  const list=sortedDishes(state.dishes.filter(x=>!q||x.name.includes(q)));
-  document.getElementById("sheetRoot").innerHTML=`<div class="sheet-bg" data-act="sheet-bg"><div class="sheet" role="dialog" aria-label="${name}に料理を追加">
-  <div class="sheet-head"><h3>${name}に追加</h3><button class="close" data-act="sheet-close">閉じる</button></div>
-  <input id="pk-q" class="search" placeholder="料理をさがす" value="${esc(q)}">
-  <div class="dish-grid" id="pk-grid">${list.map(x=>`<button class="dish" data-act="pk-add" data-i="${state.dishes.indexOf(x)}">${esc(x.name)}<small>${fmt(x.salt)} g</small></button>`).join("")||`<p class="hint">見つかりません。下で新しく登録できます。</p>`}</div>
-  <div class="newdish"><input id="pk-name" placeholder="新しい料理の名前" value="${esc(q)}"><input id="pk-salt" type="number" inputmode="decimal" step="0.1" min="0" placeholder="塩分g">
-  <div class="opts"><label><input type="checkbox" id="pk-reg" checked> 料理リストにも登録</label><button class="primary" data-act="pk-new">追加</button></div></div></div></div>`;
+let pickMeal=null,pickReplace=null;
+function dishBtns(list,fav){return list.map(x=>`<button class="dish${fav?" fav":""}" data-act="pk-add" data-i="${state.dishes.indexOf(x)}">${esc(x.name)}<small>${fmt(x.salt)} g</small></button>`).join("")}
+function pickerBody(q){
+  const g=pickerGroups(pickMeal,q),name=mealName(pickMeal);
+  if(!g.fav.length&&!g.rest.length)return `<p class="hint">見つかりません。下で新しく登録できます。</p>`;
+  return (g.fav.length?`<div class="grp">${name}でよく食べるもの</div><div class="dish-grid">${dishBtns(g.fav,true)}</div>`:"")+
+    (g.rest.length?`<div class="grp">${g.fav.length?"そのほかの料理":"料理リスト"}</div><div class="dish-grid">${dishBtns(g.rest,false)}</div>`:"");
 }
-function closeSheet(){document.getElementById("sheetRoot").innerHTML="";pickMeal=null;printFiles=null;render()}
+function drawPicker(q){
+  const name=mealName(pickMeal);
+  const m=getDay(state.date).meals[pickMeal];
+  const title=pickReplace!=null&&m.items[pickReplace]?`「${esc(m.items[pickReplace].name)}」を選び変え`:`${name}に追加`;
+  document.getElementById("sheetRoot").innerHTML=`<div class="sheet-bg" data-act="sheet-bg"><div class="sheet" role="dialog" aria-label="${title}">
+  <div class="sheet-head"><h3>${title}</h3><button class="close" data-act="sheet-close">閉じる</button></div>
+  <div class="searchrow"><input id="pk-q" class="search" placeholder="料理をさがす" value="${esc(q)}"><button class="mic" data-act="mic" data-target="pk-q">🎤 話す</button></div>
+  <div class="pk-scroll" id="pk-grid">${pickerBody(q)}</div>
+  <div class="newdish"><input id="pk-name" placeholder="新しい料理の名前" value="${esc(q)}"><input id="pk-salt" type="number" inputmode="decimal" step="0.1" min="0" placeholder="塩分g">
+  <div class="opts"><label><input type="checkbox" id="pk-reg" checked> 料理リストにも登録</label><button class="primary" data-act="pk-new">${pickReplace!=null?"これに変える":"追加"}</button></div></div></div></div>`;
+}
+function closeSheet(){if(rec){try{rec.stop()}catch(e){}}document.getElementById("sheetRoot").innerHTML="";pickMeal=null;pickReplace=null;printFiles=null;render()}
+function putItem(item){
+  const m=touch(state.date).meals[pickMeal];
+  if(pickReplace!=null&&m.items[pickReplace]){m.items[pickReplace]=item;if(m.ate==null)m.ate=true;saveSoon();toast(item.name+" に変えました");closeSheet();return}
+  m.items.push(item);if(m.ate==null)m.ate=true;saveSoon();toast(item.name+" を追加しました");
+}
 
 /* ---------- print image (A4 landscape, black & white friendly) ---------- */
 const PW=2339,PH=1654;
@@ -319,66 +391,77 @@ const CFONT='"Hiragino Sans","BIZ UDPGothic","Yu Gothic","Meiryo",sans-serif';
 function drawWeek(mon){
   const cv=document.createElement("canvas");cv.width=PW;cv.height=PH;const c=cv.getContext("2d");
   c.fillStyle="#fff";c.fillRect(0,0,PW,PH);c.fillStyle="#000";c.strokeStyle="#000";c.textBaseline="top";
-  const M=60,top=150,bottom=PH-70,labelW=150,colW=(PW-2*M-labelW)/7;
+  const M=56,top=108,bottom=PH-64,labelW=176,colW=(PW-2*M-labelW)/7;
   const dates=[...Array(7)].map((_,i)=>addDays(mon,i)),ds=dates.map(x=>state.days[x]),s=stats([mon]);
-  // title + summary
-  c.font=`bold 52px ${CFONT}`;c.fillText(`食事記録シート　${mdShort(dates[0])}〜${mdShort(dates[6])}`,M,48);
-  c.font=`30px ${CFONT}`;c.textAlign="right";
-  c.fillText(`1日平均 ${s.avg==null?"—":fmt(s.avg)+"g"}　いちばん多い日 ${s.max==null?"—":fmt(s.max)+"g"}　6g超え ${s.n?s.over+"日／"+s.n+"日":"—"}`,PW-M,60);
+  // title + summary (smaller title, more room for the table)
+  c.font=`bold 38px ${CFONT}`;c.fillText(`食事記録シート　${mdShort(dates[0])}〜${mdShort(dates[6])}`,M,40);
+  c.font=`26px ${CFONT}`;c.textAlign="right";
+  c.fillText(`1日平均 ${s.avg==null?"—":fmt(s.avg)+"g"}　いちばん多い日 ${s.max==null?"—":fmt(s.max)+"g"}　6g超え ${s.n?s.over+"日／"+s.n+"日":"—"}`,PW-M,50);
   c.textAlign="left";
-  function wrap(text,maxW,font){c.font=font;const out=[];String(text||"").split(/\n/).forEach(par=>{let line="";for(const ch of par){if(c.measureText(line+ch).width>maxW&&line){out.push(line);line=ch}else line+=ch}out.push(line)});return out.filter((l,i,a)=>l!==""||a.length===1?true:false)}
-  function mealLines(m){if(!m)return [];if(m.ate===false)return [{t:"食べない",muted:true}];const L=[];if(m.time)L.push({t:m.time+"頃",muted:true});m.items.forEach(i=>L.push({t:i.name,salt:fmt(i.salt)}));if(m.items.length)L.push({sum:fmt(mealSalt(m))});return L}
-  // fit font size
-  let f=30,layout;
-  for(;f>=14;f-=1){
-    const lh=Math.round(f*1.32),pad=8;
+  function wrap(text,maxW,font){c.font=font;const out=[];String(text||"").split(/\n/).forEach(par=>{let line="";for(const ch of par){if(c.measureText(line+ch).width>maxW&&line){out.push(line);line=ch}else line+=ch}out.push(line)});return out.filter((l,i,a)=>l!==""||a.length===1)}
+  function mealLines(m,pack,maxW,font){
+    if(!m)return [];if(m.ate===false)return [{t:"食べない",muted:true}];
+    const L=[];
+    if(pack===1){if(m.time)L.push({t:m.time+"頃",muted:true});m.items.forEach(i=>L.push({t:i.name,salt:fmt(i.salt)}));if(m.items.length)L.push({sum:fmt(mealSalt(m))});return L}
+    // pack 2: two dishes per line when they fit; time goes on the subtotal line
+    c.font=font;const parts=m.items.map(i=>i.name+" "+fmt(i.salt));
+    for(let i=0;i<parts.length;i++){const a=parts[i],b=parts[i+1];if(b!=null&&c.measureText(a+"・"+b).width<=maxW){L.push({t:a+"・"+b,packed:true});i++}else L.push({t:a,packed:true})}
+    if(m.items.length)L.push({sum:fmt(mealSalt(m)),time:m.time?m.time+"頃":""});else if(m.time)L.push({t:m.time+"頃",muted:true});
+    return L;
+  }
+  // choose font size: readable floor first, then pack 2 dishes per line, smallest last
+  const tries=[];for(let f=34;f>=24;f--)tries.push([f,1]);for(let f=30;f>=18;f--)tries.push([f,2]);for(let f=17;f>=12;f--)tries.push([f,2]);
+  let layout=null;
+  for(const [f,pack] of tries){
+    const lh=Math.round(f*1.32),pad=8,font=`${f}px ${CFONT}`,inner=colW-2*pad;
     const rows=[];
     rows.push({key:"head",h:lh*2+pad*2});
     ["天気","睡眠","ストレス"].forEach(n=>rows.push({key:n,h:lh+pad*2}));
-    MEALS.forEach(([k,n])=>{const mx=Math.max(1,...ds.map(d=>mealLines(d&&d.meals[k]).length));rows.push({key:k,label:n,h:mx*lh+pad*2})});
+    MEALS.forEach(([k,n])=>{const mx=Math.max(1,...ds.map(d=>mealLines(d&&d.meals[k],pack,inner,font).length));rows.push({key:k,label:n,h:mx*lh+pad*2})});
     rows.push({key:"tot",h:Math.round(lh*1.4)+pad*2});
     rows.push({key:"bp",h:lh+pad*2});rows.push({key:"wt",h:lh+pad*2});
-    const nl=Math.max(1,...ds.map(d=>wrap(d&&d.note,colW-2*pad,`${f}px ${CFONT}`).length));rows.push({key:"note",h:nl*lh+pad*2});
+    const nl=Math.max(1,...ds.map(d=>wrap(d&&d.note,inner,font).length));rows.push({key:"note",h:nl*lh+pad*2});
     const total=rows.reduce((a,r)=>a+r.h,0);
-    layout={rows,lh,pad,total};
+    layout={rows,lh,pad,total,f,pack,font,inner};
     if(total<=bottom-top)break;
   }
-  const {rows,lh,pad}=layout;
-  // if there is spare room, stretch meal rows a little for writing space
+  const {rows,lh,pad,f,pack,font,inner}=layout;
+  // spare room → taller meal/note rows (space to write by hand)
   const spare=(bottom-top)-layout.total;
   if(spare>0){const mrows=rows.filter(r=>MEALS.some(m=>m[0]===r.key)||r.key==="note");const add=spare/mrows.length;mrows.forEach(r=>r.h+=add)}
   let y=top;
-  const label={"天気":"天気","睡眠":"睡眠","ストレス":"ストレス",tot:"塩分合計",bp:"血圧",wt:"体重",note:"感想"};
+  const label={"天気":"天気","睡眠":"睡眠","ストレス":"ストレス",tot:"塩分合計",bp:"血圧・脈拍",wt:"体重",note:"感想"};
+  function fitLabel(t,maxW){let s=f;c.font=`bold ${s}px ${CFONT}`;while(c.measureText(t).width>maxW&&s>12){s--;c.font=`bold ${s}px ${CFONT}`}return s}
   c.lineWidth=2;
   rows.forEach(r=>{
-    // grid
     c.strokeRect(M,y,labelW,r.h);for(let i=0;i<7;i++)c.strokeRect(M+labelW+i*colW,y,colW,r.h);
-    // label
-    c.font=`bold ${f}px ${CFONT}`;c.fillStyle="#000";
+    c.fillStyle="#000";
     if(r.key==="head"){c.fillStyle="#e6e6e6";c.fillRect(M+1,y+1,labelW-2,r.h-2);for(let i=0;i<7;i++){c.fillRect(M+labelW+i*colW+1,y+1,colW-2,r.h-2)}c.fillStyle="#000";
-      dates.forEach((x,i)=>{c.textAlign="center";c.font=`bold ${f}px ${CFONT}`;c.fillText(wd(x)+"曜",M+labelW+i*colW+colW/2,y+pad);c.font=`${f}px ${CFONT}`;c.fillText(md(x),M+labelW+i*colW+colW/2,y+pad+lh)});c.textAlign="left";y+=r.h;return}
-    c.fillText(r.label||label[r.key],M+10,y+pad);
+      dates.forEach((x,i)=>{c.textAlign="center";c.font=`bold ${f}px ${CFONT}`;c.fillText(wd(x)+"曜",M+labelW+i*colW+colW/2,y+pad);c.font=font;c.fillText(md(x),M+labelW+i*colW+colW/2,y+pad+lh)});c.textAlign="left";y+=r.h;return}
+    const lt=r.label||label[r.key];fitLabel(lt,labelW-18);c.fillText(lt,M+10,y+pad);
     ds.forEach((d,i)=>{
       const x0=M+labelW+i*colW+pad,x1=M+labelW+(i+1)*colW-pad;let ty=y+pad;
-      c.font=`${f}px ${CFONT}`;
+      c.font=font;
       if(["天気","睡眠","ストレス"].includes(r.key)){const v=d&&d[{"天気":"weather","睡眠":"sleep","ストレス":"stress"}[r.key]];if(v){c.textAlign="center";c.fillText(v,(x0+x1)/2,ty);c.textAlign="left"}}
       else if(MEALS.some(m=>m[0]===r.key)){
-        mealLines(d&&d.meals[r.key]).forEach(L=>{
-          if(L.sum!=null){c.beginPath();c.moveTo(x0,ty+2);c.lineTo(x1,ty+2);c.lineWidth=1;c.stroke();c.lineWidth=2;c.font=`bold ${f}px ${CFONT}`;c.textAlign="right";c.fillText(L.sum,x1,ty+5);c.textAlign="left";c.font=`${f}px ${CFONT}`}
+        mealLines(d&&d.meals[r.key],pack,inner,font).forEach(L=>{
+          if(L.sum!=null){c.beginPath();c.moveTo(x0,ty+2);c.lineTo(x1,ty+2);c.lineWidth=1;c.stroke();c.lineWidth=2;
+            if(L.time){c.fillStyle="#555";c.font=font;c.fillText(L.time,x0,ty+5);c.fillStyle="#000"}
+            c.font=`bold ${f}px ${CFONT}`;c.textAlign="right";c.fillText(L.sum,x1,ty+5);c.textAlign="left";c.font=font}
           else if(L.muted){c.fillStyle="#555";c.fillText(L.t,x0,ty);c.fillStyle="#000"}
+          else if(L.packed){let t=L.t;while(c.measureText(t).width>x1-x0&&t.length>1)t=t.slice(0,-1);if(t!==L.t)t=t.slice(0,-1)+"…";c.fillText(t,x0,ty)}
           else{let nm=L.t;const sw=L.salt?c.measureText(L.salt).width+10:0;while(c.measureText(nm).width>x1-x0-sw&&nm.length>1)nm=nm.slice(0,-1);if(nm!==L.t)nm=nm.slice(0,-1)+"…";c.fillText(nm,x0,ty);if(L.salt){c.textAlign="right";c.fillText(L.salt,x1,ty);c.textAlign="left"}}
           ty+=lh;
         });
       }
       else if(r.key==="tot"){if(hasData(d)){const t=daySalt(d);c.textAlign="center";c.font=`bold ${Math.round(f*1.3)}px ${CFONT}`;c.fillText((t>GOAL?"★ ":"")+fmt(t)+" g",(x0+x1)/2,ty);c.textAlign="left";if(t>GOAL){c.lineWidth=4;c.strokeRect(M+labelW+i*colW+4,y+4,colW-8,r.h-8);c.lineWidth=2}}}
-      else if(r.key==="bp"){if(d&&(d.bpHi||d.bpLo)){c.textAlign="center";c.fillText((d.bpHi||"")+(d.bpLo?" / "+d.bpLo:""),(x0+x1)/2,ty);c.textAlign="left"}}
+      else if(r.key==="bp"){const t=bpText(d);if(t){let s2=f;c.font=`${s2}px ${CFONT}`;while(c.measureText(t).width>x1-x0&&s2>12){s2--;c.font=`${s2}px ${CFONT}`}c.textAlign="center";c.fillText(t,(x0+x1)/2,ty);c.textAlign="left";c.font=font}}
       else if(r.key==="wt"){if(d&&d.weight){c.textAlign="center";c.fillText(d.weight+" kg",(x0+x1)/2,ty);c.textAlign="left"}}
-      else if(r.key==="note"){wrap(d&&d.note,x1-x0,`${f}px ${CFONT}`).forEach(l=>{c.fillText(l,x0,ty);ty+=lh})}
+      else if(r.key==="note"){wrap(d&&d.note,x1-x0,font).forEach(l=>{c.fillText(l,x0,ty);ty+=lh})}
     });
     y+=r.h;
   });
-  c.font=`22px ${CFONT}`;c.fillStyle="#333";c.fillText("塩分の単位は g（グラム）　★＝1日6gを超えた日",M,PH-50);
-  c.textAlign="right";const now=new Date();c.fillText("印刷日 "+(now.getMonth()+1)+"/"+now.getDate(),PW-M,PH-50);c.textAlign="left";
+  c.font=`22px ${CFONT}`;c.fillStyle="#333";c.fillText("塩分の単位は g（グラム）　★＝1日6gを超えた日",M,PH-46);
   return cv;
 }
 let printFiles=null;
@@ -389,36 +472,36 @@ function openPrint(){
   <div class="sheet-head"><h3>印刷用の画像（${weeks.length}枚）</h3><button class="close" data-act="sheet-close">閉じる</button></div>
   <div class="stack preview" style="overflow:auto" id="pv"></div>
   <div class="stack" style="margin-top:10px"><button class="primary big" data-act="share-print" disabled id="shareBtn">準備中…</button>
-  <p class="hint">一覧から <b>Canon PRINT</b> を選んでください。出ないときは「画像を保存」→ Canon PRINTの「文書印刷」から選びます。</p></div></div></div>`;
+  <p class="hint">一覧から「<b>画像を保存</b>」を選びます（画像を長押しして「写真に保存」でもOK）。そのあと <b>Canon PRINT</b> の「写真印刷」で印刷してください。</p></div></div></div>`;
   const pv=document.getElementById("pv");
   printFiles=[];let done=0;
   canvases.forEach((cv,i)=>{const img=document.createElement("img");img.alt="印刷用の画像 "+(i+1);img.src=cv.toDataURL("image/png");pv.appendChild(img);
-    cv.toBlob(b=>{printFiles[i]=new File([b],`食事記録_${weeks[i]}.png`,{type:"image/png"});done++;if(done===canvases.length){const btn=document.getElementById("shareBtn");if(btn){btn.disabled=false;btn.textContent="Canon PRINTで印刷（共有）"}}},"image/png")});
+    cv.toBlob(b=>{printFiles[i]=new File([b],`食事記録_${weeks[i]}.png`,{type:"image/png"});done++;if(done===canvases.length){const btn=document.getElementById("shareBtn");if(btn){btn.disabled=false;btn.textContent="📷 画像を保存"}}},"image/png")});
 }
 async function sharePrint(){
   if(!printFiles||!printFiles.length)return;
   try{
     if(navigator.canShare&&navigator.canShare({files:printFiles})){await navigator.share({files:printFiles})}
-    else toast("この画面では共有できません。画像を長押しして「写真に保存」してください");
-  }catch(e){if(e&&e.name!=="AbortError")toast("共有できませんでした。画像を長押しして保存してください")}
+    else toast("画像を長押しして「写真に保存」してください");
+  }catch(e){if(e&&e.name!=="AbortError")toast("画像を長押しして「写真に保存」してください")}
 }
 
 /* ---------- sample records (fictional, flagged sample:true) ---------- */
 function addSamples(){
   const mon=mondayOf(todayStr()),I=(name,salt)=>({name,salt});
   const plan=[
-    [[I("トースト",0.6),I("目玉焼き",0.1),I("牛乳",0.1)],[I("おにぎり",0.5),I("わかめのみそ汁",1.1),I("生野菜",0.3)],[I("鮭の西京焼き",1.0),I("かぼちゃ煮",0.3),I("冷奴",0.03),I("ごはん",0)],null,"晴れ","十分","ふつう","138","78","60.1","散歩を少し。よく眠れた様子。"],
-    [[I("トースト",0.6),I("牛乳",0.1)],[I("しゅうまい",0.8),I("ごはん",0),I("生野菜",0.3)],[I("肉じゃが",1.2),I("生野菜",0.3),I("ごはん",0)],null,"くもり","足りない","ふつう","142","80","","夜にせきが少し。"],
-    [null,[I("とりそぼろ丼",2.0),I("生野菜",0.3)],[I("コロッケ",0.3),I("とん汁",1.0),I("ごはん",0)],[I("味のり",0.1)],"雨","十分","少ない","130","76","","デイサービスへ。体操に参加。"],
-    [[I("豆乳",0),I("納豆",0.3),I("ごはん",0)],[I("お好み焼き",1.8)],[I("おでん",2.0),I("生野菜",0.3),I("さつまあげ",1.2),I("ごはん",0)],[I("イカそうめん",0.6)],"晴れ","十分","多い","150","84","","少し疲れ気味。"],
-    [[I("トースト",0.6),I("牛乳",0.1)],[I("おにぎり",0.5),I("たまご焼き",0.2),I("なすのみそ汁",0.8)],[I("とんかつ",0.4),I("生野菜",0.3),I("冷奴",0.03),I("ごはん",0)],null,"くもり","十分","ふつう","134","78","59.8","リハビリの日。おふろに入った。"],
-    [[I("豆乳",0)],[I("しゅうまい",0.8),I("金時豆",0.25),I("赤飯",1.0)],[I("野菜いため",1.0),I("さつまあげ",1.2),I("生野菜",0.3),I("ごはん",0)],null,"晴れ","足りない","ふつう","146","82","","のどが少し痛い。"],
-    [[I("納豆",0.3),I("たまご",0.3),I("ごはん",0)],null,null,null,"くもり","十分","ふつう","","","",""]
+    [[I("トースト",0.6),I("目玉焼き",0.1),I("牛乳",0.1)],[I("おにぎり",0.5),I("わかめのみそ汁",1.1),I("生野菜",0.3)],[I("鮭の西京焼き",1.0),I("かぼちゃ煮",0.3),I("冷奴",0.03),I("ごはん",0)],null,"晴れ","十分","ふつう","138","78","72","60.1","散歩を少し。よく眠れた様子。"],
+    [[I("トースト",0.6),I("牛乳",0.1)],[I("しゅうまい",0.8),I("ごはん",0),I("生野菜",0.3)],[I("肉じゃが",1.2),I("生野菜",0.3),I("ごはん",0)],null,"くもり","足りない","ふつう","142","80","76","","夜にせきが少し。"],
+    [null,[I("とりそぼろ丼",2.0),I("生野菜",0.3)],[I("コロッケ",0.3),I("とん汁",1.0),I("ごはん",0)],[I("味のり",0.1)],"雨","十分","少ない","130","76","70","","デイサービスへ。体操に参加。"],
+    [[I("豆乳",0),I("納豆",0.3),I("ごはん",0)],[I("お好み焼き",1.8)],[I("おでん",2.0),I("生野菜",0.3),I("さつまあげ",1.2),I("ごはん",0)],[I("イカそうめん",0.6)],"晴れ","十分","多い","150","84","80","","少し疲れ気味。"],
+    [[I("トースト",0.6),I("牛乳",0.1)],[I("おにぎり",0.5),I("たまご焼き",0.2),I("なすのみそ汁",0.8)],[I("とんかつ",0.4),I("生野菜",0.3),I("冷奴",0.03),I("ごはん",0)],null,"くもり","十分","ふつう","134","78","68","59.8","リハビリの日。おふろに入った。"],
+    [[I("豆乳",0)],[I("しゅうまい",0.8),I("金時豆",0.25),I("赤飯",1.0)],[I("野菜いため",1.0),I("さつまあげ",1.2),I("生野菜",0.3),I("ごはん",0)],null,"晴れ","足りない","ふつう","146","82","74","","のどが少し痛い。"],
+    [[I("納豆",0.3),I("たまご",0.3),I("ごはん",0)],null,null,null,"くもり","十分","ふつう","","","","",""]
   ];
   plan.forEach((p,i)=>{const date=addDays(mon,i);if(state.days[date]&&anyData(state.days[date]))return;
     const d=blankDay(date);d.sample=true;
     [["b",p[0],"08:30"],["l",p[1],"12:00"],["d",p[2],"18:00"],["n",p[3],""]].forEach(([k,items,tm])=>{if(items){d.meals[k]={ate:true,time:tm,items}}else if(k==="b"&&i===2){d.meals.b.ate=false}});
-    d.weather=p[4];d.sleep=p[5];d.stress=p[6];d.bpHi=p[7];d.bpLo=p[8];d.weight=p[9];d.note=p[10]?"（見本）"+p[10]:"";
+    d.weather=p[4];d.sleep=p[5];d.stress=p[6];d.bpHi=p[7];d.bpLo=p[8];d.pulse=p[9];d.weight=p[10];d.note=p[11]?"（見本）"+p[11]:"";
     state.days[date]=d;});
   saveNow();render();toast("見本の記録を入れました");
 }
@@ -426,7 +509,7 @@ function addSamples(){
 /* ---------- backup / restore ---------- */
 async function backup(){
   saveNow();
-  const data={app:"塩分きろく帳",version:1,exportedAt:new Date().toISOString(),days:state.days,dishes:state.dishes};
+  const data={app:"塩分きろく帳",version:2,exportedAt:new Date().toISOString(),days:state.days,dishes:state.dishes};
   const name=`塩分きろく_控え_${todayStr()}.json`;
   const file=new File([JSON.stringify(data)],name,{type:"application/json"});
   try{
@@ -460,13 +543,18 @@ document.addEventListener("click",e=>{
     case "choice":{const d=touch(date);d[t.dataset.field]=d[t.dataset.field]===t.dataset.val?"":t.dataset.val;render();saveSoon();break}
     case "ate":{const m=touch(date).meals[t.dataset.meal],v=t.dataset.val==="1";m.ate=m.ate===v?null:v;render();saveSoon();break}
     case "rm":{touch(date).meals[t.dataset.meal].items.splice(+t.dataset.i,1);render();saveSoon();break}
-    case "pick":pickMeal=t.dataset.meal;drawPicker("");break;
+    case "again":{const k=t.dataset.meal,p=prevMeal(k,date);if(!p)break;const m=touch(date).meals[k];
+      m.items=p.m.items.map(i=>({name:i.name,salt:i.salt}));m.ate=true;if(!m.time&&p.m.time)m.time=p.m.time;m.items.forEach(i=>bumpUse(i.name));
+      render();saveSoon();toast("前回と同じにしました");break}
+    case "pick":pickMeal=t.dataset.meal;pickReplace=null;drawPicker("");break;
+    case "swap":pickMeal=t.dataset.meal;pickReplace=+t.dataset.i;drawPicker("");break;
+    case "mic":startMic(t.dataset.target,t);break;
     case "sheet-close":case "sheet-bg":closeSheet();break;
-    case "pk-add":{const x=state.dishes[+t.dataset.i],m=touch(date).meals[pickMeal];m.items.push({name:x.name,salt:x.salt});if(m.ate==null)m.ate=true;x.uses=(x.uses||0)+1;saveSoon();toast(x.name+" を追加しました");break}
+    case "pk-add":{const x=state.dishes[+t.dataset.i];x.uses=(x.uses||0)+1;putItem({name:x.name,salt:x.salt});break}
     case "pk-new":{const nm=document.getElementById("pk-name").value.trim(),sv=document.getElementById("pk-salt").value;if(!nm){toast("料理の名前を入れてください");break}
-      const salt=sv===""?"":r2(Number(sv)),m=touch(date).meals[pickMeal];m.items.push({name:nm,salt});if(m.ate==null)m.ate=true;
+      const salt=sv===""?"":r2(Number(sv));
       if(document.getElementById("pk-reg").checked&&!state.dishes.some(x=>x.name===nm))state.dishes.push({name:nm,salt:salt===""?0:salt,uses:1});
-      saveSoon();toast(nm+" を追加しました");drawPicker("");break}
+      const wasReplace=pickReplace!=null;putItem({name:nm,salt});if(!wasReplace)drawPicker("");break}
     case "wk-prev":state.date=addDays(date,-7*state.weekMode);render();break;
     case "wk-next":state.date=addDays(date,7*state.weekMode);render();break;
     case "wk-mode":state.weekMode=+t.dataset.val;render();break;
@@ -487,15 +575,17 @@ document.addEventListener("click",e=>{
 });
 document.addEventListener("input",e=>{
   const t=e.target,a=t.dataset&&t.dataset.act,date=state.date;
-  if(t.id==="pk-q"){const q=t.value;const grid=document.getElementById("pk-grid");const list=sortedDishes(state.dishes.filter(x=>!q||x.name.includes(q)));
-    grid.innerHTML=list.map(x=>`<button class="dish" data-act="pk-add" data-i="${state.dishes.indexOf(x)}">${esc(x.name)}<small>${fmt(x.salt)} g</small></button>`).join("")||`<p class="hint">見つかりません。下で新しく登録できます。</p>`;
-    document.getElementById("pk-name").value=q;return}
+  if(t.id==="pk-q"){const q=t.value;document.getElementById("pk-grid").innerHTML=pickerBody(q);document.getElementById("pk-name").value=q;return}
   if(!a)return;
   if(a==="f"){touch(date)[t.dataset.field]=t.value;saveSoon()}
   else if(a==="time"){touch(date).meals[t.dataset.meal].time=t.value;saveSoon()}
   else if(a==="salt"){const m=touch(date).meals[t.dataset.meal];m.items[+t.dataset.i].salt=t.value===""?"":r2(Number(t.value));saveSoon();
     const head=t.closest("section").querySelector(".sub-total");if(head)head.textContent=fmt(mealSalt(m))+" g"}
   else if(a==="dsalt"){state.dishes[+t.dataset.i].salt=t.value===""?0:r2(Number(t.value));saveSoon()}
+});
+document.addEventListener("keydown",e=>{
+  if(e.key!=="Enter")return;const order=["bpHi","bpLo","pulse","weight","note"],i=order.indexOf(e.target.id);
+  if(i>=0&&i<order.length-1){e.preventDefault();const n=document.getElementById(order[i+1]);if(n)n.focus()}
 });
 document.addEventListener("change",e=>{if(e.target.dataset&&e.target.dataset.act==="salt")render()});
 
